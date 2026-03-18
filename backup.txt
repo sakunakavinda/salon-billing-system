@@ -1,0 +1,3381 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cashier Dashboard</title>
+    <style>
+      :root {
+        --primary-color: #8b5cf6;
+        --primary-hover: #7c3aed;
+        --background-color: #f8fafc;
+        --card-background: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 1rem;
+        line-height: 1.6;
+      }
+
+      /* Header Styles - Full width */
+      .dashboard-header {
+        background: white;
+        padding: 1rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100vw;
+        max-width: none;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .welcome-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .welcome-text h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .welcome-text p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .logout-btn {
+        background: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-size: 1rem;
+      }
+
+      .logout-btn:hover {
+        background: red;
+        transform: scale(1.1);
+      }
+
+      /* Main Content */
+      .dashboard-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100vw;
+        max-width: none;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .dashboard-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 1rem;
+      }
+
+      /* Single-column layout (stacked vertically on all screen sizes) */
+      .dashboard-main {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      /* Sales Form Card */
+      .sales-form-card {
+        background: #f8fafc;
+        padding: 2rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        height: fit-content;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Form Layout - Two-column layout for desktop, stacked for mobile */
+      .form-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      /* Mobile layout - stack name and TP inputs, then services container */
+      @media (max-width: 768px) {
+        .form-layout {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        
+        /* Stack name and TP inputs vertically on mobile */
+        .form-group {
+          margin-bottom: 1rem;
+        }
+        
+        /* Make inputs full width on mobile with proper constraints */
+        .form-control {
+          width: 100%;
+          box-sizing: border-box;
+          max-width: 100%;
+          padding: 12px 16px;
+          min-height: 44px;
+        }
+      }
+
+      /* Enhanced mobile responsiveness for very small screens */
+      @media (max-width: 480px) {
+        .form-layout {
+          gap: 1.25rem;
+        }
+        
+        .form-group {
+          margin-bottom: 0.875rem;
+        }
+        
+        /* Optimize input sizing for small screens with proper spacing */
+        .form-control {
+          font-size: 16px; /* Prevent iOS zoom */
+          min-height: 44px; /* Minimum touch target */
+          padding: 12px 14px; /* Reduced padding to prevent cutoff */
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          margin: 0;
+        }
+      }
+
+      /* Tablet optimization */
+      @media (min-width: 481px) and (max-width: 768px) {
+        .form-layout {
+          gap: 1.5rem;
+        }
+        
+        .form-group {
+          margin-bottom: 1.125rem;
+        }
+        
+        .form-control {
+          font-size: 16px;
+          padding: 12px 16px;
+          min-height: 44px;
+          width: 100%;
+          box-sizing: border-box;
+          max-width: 100%;
+        }
+      }
+
+      /* Ultra-small screen optimization */
+      @media (max-width: 375px) {
+        .form-layout {
+          gap: 1rem;
+        }
+        
+        .form-group {
+          margin-bottom: 0.75rem;
+        }
+        
+        .form-control {
+          font-size: 16px;
+          padding: 10px 12px; /* Even smaller padding for ultra-small screens */
+          min-height: 42px;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+        }
+      }
+
+      /* Ensure form container doesn't overflow */
+      .sales-form-card {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        padding: 2rem; /* Ensure adequate padding around form */
+      }
+
+      /* Add safe area inset support for mobile devices */
+      @supports (padding: max(0px)) {
+        .sales-form-card {
+          padding: max(2rem, env(safe-area-inset-top)) max(2rem, env(safe-area-inset-right)) max(2rem, env(safe-area-inset-bottom)) max(2rem, env(safe-area-inset-left));
+        }
+      }
+
+      /* Services Container Responsive Styling */
+      .services-container {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+        touch-action: manipulation;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* Mobile-specific services container optimizations */
+      @media (max-width: 768px) {
+        .services-container {
+          max-height: 250px;
+          padding: 0.75rem;
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .services-container {
+          max-height: 200px;
+          padding: 0.625rem;
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
+
+      @media (max-width: 375px) {
+        .services-container {
+          max-height: 180px;
+          padding: 0.5rem;
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        background: white;
+        box-sizing: border-box;
+        max-width: 100%;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      }
+
+      .form-control.error {
+        border-color: var(--danger-color);
+      }
+
+      /* Force form elements to be fully responsive on all mobile screens */
+      @media (max-width: 768px) {
+        .form-group {
+          margin-bottom: 1rem;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        
+        .form-control {
+          width: 100%;
+          box-sizing: border-box;
+          max-width: 100%;
+          padding: 12px 16px;
+          min-height: 44px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .form-group {
+          margin-bottom: 0.875rem;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        
+        .form-control {
+          width: 100%;
+          box-sizing: border-box;
+          max-width: 100%;
+          padding: 12px 14px;
+          min-height: 44px;
+        }
+      }
+
+      @media (max-width: 375px) {
+        .form-group {
+          margin-bottom: 0.75rem;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        
+        .form-control {
+          width: 100%;
+          box-sizing: border-box;
+          max-width: 100%;
+          padding: 10px 12px;
+          min-height: 42px;
+        }
+      }
+
+      @media (max-width: 320px) {
+        .form-group {
+          margin-bottom: 0.625rem;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        
+        .form-control {
+          width: 100%;
+          box-sizing: border-box;
+          max-width: 100%;
+          padding: 8px 10px;
+          min-height: 40px;
+        }
+      }
+
+
+      .service-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .service-item:last-child {
+        border-bottom: none;
+      }
+
+      .service-item:hover {
+        background-color: #f8fafc;
+      }
+
+      .service-item:active {
+        background-color: #eef2ff;
+        transform: scale(0.99);
+      }
+
+      .service-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        position: relative;
+        accent-color: var(--primary-color);
+        -webkit-appearance: none;
+        appearance: none;
+        border: 2px solid var(--border-color);
+        border-radius: 4px;
+        background-color: white;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .service-item input[type="checkbox"]:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        position: relative;
+      }
+
+      .service-item input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 1;
+      }
+
+      .service-item input[type="checkbox"]:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+
+      .service-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex: 1;
+        min-width: 0; /* Prevent flex item overflow */
+      }
+
+      .service-name {
+        font-weight: 500;
+        flex: 1;
+        min-width: 0; /* Allow text truncation if needed */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .service-price {
+        color: var(--primary-color);
+        font-weight: 600;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+
+      /* Mobile-specific service item optimizations */
+      @media (max-width: 768px) {
+        .service-item {
+          gap: 12px;
+          padding: 14px 16px;
+          min-height: 52px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 20px;
+          height: 20px;
+          margin-right: 0;
+        }
+
+        .service-item input[type="checkbox"]:checked::after {
+          font-size: 14px;
+        }
+
+        .service-name {
+          font-size: 16px;
+        }
+
+        .service-price {
+          font-size: 16px;
+        }
+      }
+
+      /* Enhanced mobile touch targets for very small screens */
+      @media (max-width: 480px) {
+        .service-item {
+          gap: 10px;
+          padding: 12px 14px;
+          min-height: 48px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+        }
+
+        .service-item input[type="checkbox"]:checked::after {
+          font-size: 12px;
+        }
+
+        .service-name {
+          font-size: 14px;
+        }
+
+        .service-price {
+          font-size: 14px;
+        }
+      }
+
+      /* Total Section */
+      .total-section {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .total-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .total-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      /* Submit Section - Enhanced Responsive Layout */
+      .submit-section {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      /* Enhanced Button Base Styles */
+      .submit-btn,
+      .reset-btn {
+        /* Base responsive sizing using CSS custom properties */
+        --btn-min-height: 48px;
+        --btn-padding-y: 12px;
+        --btn-padding-x: 24px;
+        --btn-font-size: 16px;
+        --btn-border-radius: 10px;
+        --btn-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --btn-hover-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+        --btn-active-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        --btn-transform-hover: translateY(-2px);
+        --btn-transform-active: translateY(-1px);
+
+        background: var(--btn-bg);
+        color: white;
+        border: none;
+        padding: var(--btn-padding-y) var(--btn-padding-x);
+        border-radius: var(--btn-border-radius);
+        font-weight: 600;
+        font-size: var(--btn-font-size);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        flex: 1;
+        position: relative;
+        box-shadow: var(--btn-shadow);
+        touch-action: manipulation;
+        min-height: var(--btn-min-height);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+        white-space: nowrap;
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+      }
+
+      /* Progressive Button Sizing for Different Screen Sizes */
+      
+      /* Ultra-small screens (320px - 375px) */
+      @media (max-width: 375px) {
+        .submit-btn,
+        .reset-btn {
+          --btn-min-height: 44px;
+          --btn-padding-y: 10px;
+          --btn-padding-x: 20px;
+          --btn-font-size: 14px;
+          --btn-border-radius: 8px;
+          --btn-transform-hover: translateY(-1px);
+          --btn-transform-active: translateY(0);
+        }
+      }
+
+      /* Small screens (376px - 480px) */
+      @media (min-width: 376px) and (max-width: 480px) {
+        .submit-btn,
+        .reset-btn {
+          --btn-min-height: 46px;
+          --btn-padding-y: 11px;
+          --btn-padding-x: 22px;
+          --btn-font-size: 15px;
+          --btn-border-radius: 9px;
+          --btn-transform-hover: translateY(-1.5px);
+          --btn-transform-active: translateY(-0.5px);
+        }
+      }
+
+      /* Medium small screens (481px - 560px) */
+      @media (min-width: 481px) and (max-width: 560px) {
+        .submit-btn,
+        .reset-btn {
+          --btn-min-height: 48px;
+          --btn-padding-y: 12px;
+          --btn-padding-x: 24px;
+          --btn-font-size: 16px;
+          --btn-border-radius: 10px;
+          --btn-transform-hover: translateY(-2px);
+          --btn-transform-active: translateY(-1px);
+        }
+      }
+
+      /* Large screens (561px - 768px) */
+      @media (min-width: 561px) and (max-width: 768px) {
+        .submit-btn,
+        .reset-btn {
+          --btn-min-height: 50px;
+          --btn-padding-y: 13px;
+          --btn-padding-x: 26px;
+          --btn-font-size: 16px;
+          --btn-border-radius: 10px;
+          --btn-transform-hover: translateY(-2px);
+          --btn-transform-active: translateY(-1px);
+        }
+      }
+
+      /* Tablet screens (769px - 1024px) */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .submit-btn,
+        .reset-btn {
+          --btn-min-height: 52px;
+          --btn-padding-y: 14px;
+          --btn-padding-x: 28px;
+          --btn-font-size: 17px;
+          --btn-border-radius: 11px;
+          --btn-transform-hover: translateY(-2.5px);
+          --btn-transform-active: translateY(-1.5px);
+        }
+      }
+
+      /* Desktop screens (1025px and up) */
+      @media (min-width: 1025px) {
+        .submit-btn,
+        .reset-btn {
+          --btn-min-height: 54px;
+          --btn-padding-y: 15px;
+          --btn-padding-x: 30px;
+          --btn-font-size: 18px;
+          --btn-border-radius: 12px;
+          --btn-transform-hover: translateY(-3px);
+          --btn-transform-active: translateY(-2px);
+        }
+      }
+
+      /* Submit Button Specific Styles */
+      .submit-btn {
+        --btn-bg: var(--success-color);
+      }
+
+      .submit-btn:hover {
+        --btn-bg: #059669;
+        transform: var(--btn-transform-hover);
+        box-shadow: var(--btn-hover-shadow);
+      }
+
+      .submit-btn:active {
+        transform: var(--btn-transform-active);
+        box-shadow: var(--btn-active-shadow);
+        --btn-bg: #047857;
+      }
+
+      .submit-btn:disabled {
+        --btn-bg: #94a3b8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        opacity: 0.6;
+      }
+
+      .submit-btn:disabled:hover {
+        --btn-bg: #94a3b8;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Reset Button Specific Styles */
+      .reset-btn {
+        --btn-bg: var(--warning-color);
+      }
+
+      .reset-btn:hover {
+        --btn-bg: #d97706;
+        transform: var(--btn-transform-hover);
+        box-shadow: var(--btn-hover-shadow);
+      }
+
+      .reset-btn:active {
+        transform: var(--btn-transform-active);
+        box-shadow: var(--btn-active-shadow);
+        --btn-bg: #b45309;
+      }
+
+      /* Enhanced Focus States for Accessibility */
+      .submit-btn:focus,
+      .reset-btn:focus {
+        outline: 3px solid rgba(139, 92, 246, 0.4);
+        outline-offset: 2px;
+        z-index: 1;
+      }
+
+      .submit-btn:focus-visible,
+      .reset-btn:focus-visible {
+        outline: 3px solid var(--primary-color);
+        outline-offset: 3px;
+      }
+
+      /* Loading State Enhancements */
+      .submit-btn .loading,
+      .reset-btn .loading {
+        margin-left: 8px;
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+        animation: spin 1s linear infinite;
+      }
+
+      /* Button Group Responsive Layout */
+      @media (min-width: 769px) {
+        .submit-section {
+          flex-direction: row;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          flex: 0 0 auto;
+          min-width: 160px;
+        }
+      }
+
+      /* Mobile-specific submit section optimizations */
+      @media (max-width: 768px) {
+        .submit-section {
+          gap: 12px;
+          margin-top: 1.5rem;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 14px 24px;
+          min-height: 48px;
+          font-size: 16px;
+          border-radius: 10px;
+        }
+
+        .submit-btn:hover,
+        .reset-btn:hover {
+          transform: translateY(-2px);
+        }
+
+        .submit-btn:active,
+        .reset-btn:active {
+          transform: translateY(-1px);
+        }
+      }
+
+      /* Enhanced mobile touch targets for very small screens */
+      @media (max-width: 480px) {
+        .submit-section {
+          gap: 10px;
+          margin-top: 1.25rem;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 12px 20px;
+          min-height: 44px;
+          font-size: 14px;
+          border-radius: 8px;
+        }
+
+        .submit-btn:hover,
+        .reset-btn:hover {
+          transform: translateY(-1px);
+        }
+
+        .submit-btn:active,
+        .reset-btn:active {
+          transform: translateY(0);
+        }
+      }
+
+      /* Tablet and desktop optimizations */
+      @media (min-width: 769px) {
+        .submit-section {
+          flex-direction: row;
+          gap: 1rem;
+          margin-top: 2rem;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          flex: 0 0 auto;
+          min-width: 160px;
+        }
+      }
+
+      /* Loading state enhancements */
+      .submit-btn .loading {
+        margin-left: 8px;
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+      }
+
+      .reset-btn .loading {
+        margin-left: 8px;
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+      }
+
+      /* Sales History Card */
+      .sales-history-card {
+        background: #f8fafc;
+        padding: 2rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      /* Sales Summary Card */
+      .sales-summary-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .summary-item {
+        text-align: center;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid transparent;
+      }
+
+      .summary-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: #f1f5f9;
+        border-color: var(--border-color);
+      }
+
+      .summary-item .total-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+      }
+
+      .summary-item .total-sales-amount,
+      .summary-item #transaction-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        line-height: 1.2;
+      }
+
+      .summary-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+      }
+
+      /* Mobile-optimized summary cards */
+      @media (max-width: 768px) {
+        .sales-summary-card {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+          padding: 1rem;
+        }
+
+        .summary-item {
+          padding: 0.875rem;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          background: #f8fafc;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8rem;
+          margin-bottom: 0.25rem;
+          text-transform: none;
+          letter-spacing: 0;
+          color: var(--text-secondary);
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.25rem;
+          text-align: right;
+        }
+
+        .summary-item:hover {
+          transform: none;
+          background: #f1f5f9;
+        }
+      }
+
+      /* Tablet optimization for summary cards */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .sales-summary-card {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.75rem;
+          padding: 1.25rem;
+        }
+
+        .summary-item {
+          padding: 0.875rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8rem;
+          margin-bottom: 0.375rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.25rem;
+        }
+      }
+
+      /* Desktop optimization for summary cards */
+      @media (min-width: 1025px) {
+        .sales-summary-card {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+          padding: 1.5rem;
+        }
+
+        .summary-item {
+          padding: 1rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.85rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.5rem;
+        }
+      }
+
+      /* Ultra-small screen optimization for summary cards */
+      @media (max-width: 375px) {
+        .sales-summary-card {
+          padding: 0.75rem;
+          gap: 0.5rem;
+        }
+
+        .summary-item {
+          padding: 0.75rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.75rem;
+          margin-bottom: 0.2rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.1rem;
+        }
+      }
+
+      /* Small phone optimization for summary cards */
+      @media (min-width: 376px) and (max-width: 480px) {
+        .sales-summary-card {
+          padding: 0.875rem;
+          gap: 0.625rem;
+        }
+
+        .summary-item {
+          padding: 0.8125rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.78125rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.15rem;
+        }
+      }
+
+      /* Medium small phone optimization for summary cards */
+      @media (min-width: 481px) and (max-width: 560px) {
+        .sales-summary-card {
+          padding: 0.9375rem;
+          gap: 0.75rem;
+        }
+
+        .summary-item {
+          padding: 0.875rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8125rem;
+          margin-bottom: 0.3rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.2rem;
+        }
+      }
+
+      /* Search Section */
+      .search-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        min-width: 200px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        background: white;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      }
+
+      .search-input::placeholder {
+        color: #94a3b8;
+      }
+
+
+      /* Search and Clear Buttons */
+      .search-btn,
+      .clear-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        font-size: 1rem;
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+
+      .search-btn {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .search-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .clear-btn {
+        background: #94a3b8;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .clear-btn:hover {
+        background: #64748b;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .clear-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+
+      /* Sales Table - Minimal and Clean */
+      .table-container {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        background: white;
+      }
+
+      .sales-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .sales-table th,
+      .sales-table td {
+        padding: 8px;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .sales-table th {
+        background: #f8fafc;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #64748b;
+      }
+
+      .sales-table tr:hover {
+        background-color: #f8fafc;
+      }
+
+      .sale-amount {
+        font-weight: bold;
+        color: #1e293b;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .services-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .service-tag {
+        background: #e2e8f0;
+        color: #1e293b;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      /* Basic responsive behavior */
+      @media (max-width: 768px) {
+        .sales-table {
+          font-size: 3px;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 6px;
+        }
+
+        .service-tag {
+          font-size: 10px;
+          padding: 1px 4px;
+        }
+      }
+
+      /* Messages */
+      .message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .message.success {
+        background-color: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+
+      .message.error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      .message.warning {
+        background-color: #fff7ed;
+        color: #9a3412;
+        border: 1px solid #fed7aa;
+      }
+
+      /* Success Message Container */
+      .success-message-container {
+        margin-top: 1rem;
+        text-align: center;
+        min-height: 2rem;
+      }
+
+      .success-message {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        font-weight: 600;
+        animation: fadeInOut 2s ease-in-out;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+
+        10% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        90% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        100% {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+      }
+
+      /* Responsive Design - Mobile First Approach */
+      
+      /* Base styles for mobile (default) */
+      body {
+        padding: 1rem;
+      }
+
+      .container {
+        max-width: 100%;
+        padding: 0 1rem;
+      }
+
+      .dashboard-header {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .welcome-text h1 {
+        font-size: 1.5rem;
+      }
+
+      .welcome-text p {
+        font-size: 1rem;
+      }
+
+      .dashboard-content {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .dashboard-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+
+      .dashboard-main {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .sales-form-card,
+      .sales-history-card {
+        padding: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .form-control {
+        font-size: 1rem;
+        padding: 0.875rem;
+        min-height: 44px; /* Minimum touch target */
+      }
+
+      .services-container {
+        max-height: 250px;
+        padding: 0.75rem;
+      }
+
+      .service-item {
+        padding: 0.875rem;
+        min-height: 50px; /* Better touch target */
+      }
+
+      .service-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+      }
+
+      .total-section {
+        padding: 1.25rem;
+        margin-top: 1.25rem;
+      }
+
+      .total-row {
+        margin-bottom: 0.75rem;
+      }
+
+      .total-amount {
+        font-size: 1.25rem;
+      }
+
+      .submit-section {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .submit-btn,
+      .reset-btn {
+        padding: 1rem;
+        font-size: 1.1rem;
+        min-height: 44px;
+      }
+
+      .sales-summary-card {
+        padding: 1.25rem;
+        gap: 0.75rem;
+      }
+
+      .summary-item {
+        padding: 0.875rem;
+      }
+
+      .summary-item .total-sales-amount,
+      .summary-item #transaction-count {
+        font-size: 1.25rem;
+      }
+
+      .search-container {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .search-input {
+        font-size: 1rem;
+        padding: 0.875rem;
+        min-height: 44px;
+      }
+
+      #date-filter {
+        width: 100%;
+        font-size: 1rem;
+        padding: 0.875rem;
+        min-height: 44px;
+      }
+
+      .sales-table {
+        font-size: 0.875rem;
+      }
+
+      .sales-table th,
+      .sales-table td {
+        padding: 0.75rem 0.5rem;
+      }
+
+      /* Tablet styles (768px and up) */
+      @media (min-width: 768px) {
+        body {
+          padding: 1.5rem;
+        }
+
+        .container {
+          padding: 0 1.5rem;
+        }
+
+        .dashboard-header {
+          padding: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 2rem;
+        }
+
+        .welcome-text p {
+          font-size: 1.1rem;
+        }
+
+        .dashboard-content {
+          padding: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .dashboard-main {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .sales-form-card,
+        .sales-history-card {
+          padding: 2rem;
+        }
+
+        .card-title {
+          font-size: 1.25rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+          font-size: 1rem;
+          padding: 0.75rem;
+        }
+
+        .services-container {
+          max-height: 200px;
+          padding: 1rem;
+        }
+
+        .service-item {
+          padding: 0.75rem;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+        }
+
+        .total-section {
+          padding: 1.5rem;
+          margin-top: 1rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.5rem;
+        }
+
+        .total-amount {
+          font-size: 1.5rem;
+        }
+
+        .submit-section {
+          flex-direction: row;
+          gap: 1rem;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 1rem 2rem;
+          font-size: 1.1rem;
+        }
+
+        .sales-summary-card {
+          padding: 1.5rem;
+          gap: 1rem;
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .summary-item {
+          padding: 1rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.5rem;
+        }
+
+        .search-container {
+          flex-direction: row;
+          gap: 1rem;
+        }
+
+        .search-input {
+          font-size: 1rem;
+          padding: 0.75rem;
+        }
+
+        #date-filter {
+          width: 200px;
+          font-size: 1rem;
+          padding: 0.75rem;
+        }
+
+        .sales-table {
+          font-size: 0.95rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 1rem;
+        }
+      }
+
+      /* Desktop styles (1024px and up) */
+      @media (min-width: 1024px) {
+        body {
+          padding: 2rem;
+        }
+
+        .container {
+          max-width: 1200px;
+          padding: 0 2rem;
+        }
+
+        .dashboard-header {
+          padding: 2.5rem;
+          margin-bottom: 2.5rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 2.5rem;
+        }
+
+        .dashboard-content {
+          padding: 2.5rem;
+          margin-bottom: 2.5rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.75rem;
+          margin-bottom: 2rem;
+        }
+
+        .dashboard-main {
+          gap: 2.5rem;
+        }
+
+        .sales-form-card,
+        .sales-history-card {
+          padding: 2.5rem;
+        }
+
+        .card-title {
+          font-size: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .form-group {
+          margin-bottom: 2rem;
+        }
+
+        .form-control {
+          font-size: 1.125rem;
+          padding: 1rem;
+        }
+
+        .services-container {
+          max-height: 300px;
+          padding: 1.25rem;
+        }
+
+        .service-item {
+          padding: 1rem;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 22px;
+          height: 22px;
+        }
+
+        .total-section {
+          padding: 2rem;
+        }
+
+        .total-amount {
+          font-size: 1.75rem;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 1.25rem 2.5rem;
+          font-size: 1.25rem;
+        }
+
+        .sales-summary-card {
+          padding: 2rem;
+          gap: 1.5rem;
+        }
+
+        .summary-item {
+          padding: 1.5rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.75rem;
+        }
+
+        .search-input {
+          font-size: 1.125rem;
+          padding: 1rem;
+        }
+
+        #date-filter {
+          width: 250px;
+          font-size: 1.125rem;
+          padding: 1rem;
+        }
+
+        .sales-table {
+          font-size: 1rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 1.25rem;
+        }
+      }
+
+      /* Extra Small phone optimization (320px - 375px) */
+      @media (max-width: 375px) {
+        body {
+          padding: 0.5rem;
+        }
+
+        .container {
+          padding: 0 0.5rem;
+        }
+
+        .dashboard-header {
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 1.125rem;
+          line-height: 1.2;
+        }
+
+        .welcome-text p {
+          font-size: 0.875rem;
+          line-height: 1.4;
+        }
+
+        .dashboard-content {
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .dashboard-title {
+          font-size: 1rem;
+          margin-bottom: 0.625rem;
+        }
+
+        .sales-form-card,
+        .sales-history-card {
+          padding: 1rem;
+        }
+
+        .card-title {
+          font-size: 0.95rem;
+          margin-bottom: 0.625rem;
+        }
+
+        .form-group {
+          margin-bottom: 0.875rem;
+        }
+
+        .form-control {
+          font-size: 0.9rem;
+          padding: 0.625rem;
+          min-height: 38px;
+        }
+
+        .services-container {
+          max-height: 180px;
+          padding: 0.5rem;
+        }
+
+        .service-item {
+          padding: 0.625rem;
+          min-height: 42px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 16px;
+          height: 16px;
+          margin-right: 10px;
+        }
+
+        .service-info {
+          gap: 8px;
+        }
+
+        .service-name {
+          font-size: 0.875rem;
+        }
+
+        .service-price {
+          font-size: 0.875rem;
+        }
+
+        .total-section {
+          padding: 0.875rem;
+          margin-top: 0.875rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.5rem;
+        }
+
+        .total-label {
+          font-size: 0.85rem;
+        }
+
+        .total-amount {
+          font-size: 1rem;
+        }
+
+        .submit-section {
+          gap: 8px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 0.75rem;
+          font-size: 0.95rem;
+          min-height: 38px;
+        }
+
+        .sales-summary-card {
+          padding: 0.875rem;
+          gap: 0.375rem;
+        }
+
+        .summary-item {
+          padding: 0.625rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8rem;
+        }
+
+        .search-container {
+          gap: 8px;
+        }
+
+        .search-input {
+          font-size: 0.9rem;
+          padding: 0.625rem;
+          min-height: 38px;
+        }
+
+        #date-filter {
+          width: 100%;
+          font-size: 0.9rem;
+          padding: 0.625rem;
+          min-height: 38px;
+        }
+
+        .sales-table {
+          font-size: 0.75rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 0.5rem 0.25rem;
+        }
+
+        .service-tag {
+          font-size: 0.75rem;
+          padding: 0.2rem 0.4rem;
+        }
+      }
+
+      /* Small phone optimization (376px - 480px) */
+      @media (min-width: 376px) and (max-width: 480px) {
+        body {
+          padding: 0.625rem;
+        }
+
+        .container {
+          padding: 0 0.625rem;
+        }
+
+        .dashboard-header {
+          padding: 1.125rem;
+          margin-bottom: 1.125rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 1.1875rem;
+        }
+
+        .welcome-text p {
+          font-size: 0.875rem;
+        }
+
+        .dashboard-content {
+          padding: 1.125rem;
+          margin-bottom: 1.125rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.0625rem;
+          margin-bottom: 0.6875rem;
+        }
+
+        .sales-form-card,
+        .sales-history-card {
+          padding: 1.125rem;
+        }
+
+        .card-title {
+          font-size: 0.96875rem;
+          margin-bottom: 0.6875rem;
+        }
+
+        .form-group {
+          margin-bottom: 0.9375rem;
+        }
+
+        .form-control {
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+          min-height: 39px;
+        }
+
+        .services-container {
+          max-height: 190px;
+          padding: 0.5625rem;
+        }
+
+        .service-item {
+          padding: 0.6875rem;
+          min-height: 43px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 17px;
+          height: 17px;
+          margin-right: 11px;
+        }
+
+        .service-info {
+          gap: 9px;
+        }
+
+        .service-name {
+          font-size: 0.875rem;
+        }
+
+        .service-price {
+          font-size: 0.875rem;
+        }
+
+        .total-section {
+          padding: 0.9375rem;
+          margin-top: 0.9375rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.5625rem;
+        }
+
+        .total-label {
+          font-size: 0.84375rem;
+        }
+
+        .total-amount {
+          font-size: 1.03125rem;
+        }
+
+        .submit-section {
+          gap: 9px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 0.8125rem;
+          font-size: 0.96875rem;
+          min-height: 39px;
+        }
+
+        .sales-summary-card {
+          padding: 0.9375rem;
+          gap: 0.4375rem;
+        }
+
+        .summary-item {
+          padding: 0.6875rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.03125rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8125rem;
+        }
+
+        .search-container {
+          gap: 9px;
+        }
+
+        .search-input {
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+          min-height: 39px;
+        }
+
+        #date-filter {
+          width: 100%;
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+          min-height: 39px;
+        }
+
+        .sales-table {
+          font-size: 0.78125rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 0.5625rem 0.28125rem;
+        }
+
+        .service-tag {
+          font-size: 0.78125rem;
+          padding: 0.21875rem 0.4375rem;
+        }
+      }
+
+      /* Medium small phone optimization (481px - 560px) */
+      @media (min-width: 481px) and (max-width: 560px) {
+        body {
+          padding: 0.75rem;
+        }
+
+        .container {
+          padding: 0 0.75rem;
+        }
+
+        .dashboard-header {
+          padding: 1.25rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 1.25rem;
+        }
+
+        .welcome-text p {
+          font-size: 0.9rem;
+        }
+
+        .dashboard-content {
+          padding: 1.25rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.1rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .sales-form-card,
+        .sales-history-card {
+          padding: 1.25rem;
+        }
+
+        .card-title {
+          font-size: 1rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-control {
+          font-size: 0.95rem;
+          padding: 0.75rem;
+          min-height: 40px;
+        }
+
+        .services-container {
+          max-height: 200px;
+          padding: 0.625rem;
+        }
+
+        .service-item {
+          padding: 0.75rem;
+          min-height: 44px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin-right: 12px;
+        }
+
+        .service-info {
+          gap: 10px;
+        }
+
+        .service-name {
+          font-size: 0.9rem;
+        }
+
+        .service-price {
+          font-size: 0.9rem;
+        }
+
+        .total-section {
+          padding: 1rem;
+          margin-top: 1rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.625rem;
+        }
+
+        .total-label {
+          font-size: 0.875rem;
+        }
+
+        .total-amount {
+          font-size: 1.1rem;
+        }
+
+        .submit-section {
+          gap: 10px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 0.875rem;
+          font-size: 1rem;
+          min-height: 40px;
+        }
+
+        .sales-summary-card {
+          padding: 1rem;
+          gap: 0.5rem;
+        }
+
+        .summary-item {
+          padding: 0.75rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.1rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.85rem;
+        }
+
+        .search-container {
+          gap: 10px;
+        }
+
+        .search-input {
+          font-size: 0.95rem;
+          padding: 0.75rem;
+          min-height: 40px;
+        }
+
+        #date-filter {
+          width: 100%;
+          font-size: 0.95rem;
+          padding: 0.75rem;
+          min-height: 40px;
+        }
+
+        .sales-table {
+          font-size: 0.8rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 0.625rem 0.375rem;
+        }
+
+        .service-tag {
+          font-size: 0.8rem;
+          padding: 0.25rem 0.5rem;
+        }
+      }
+
+      /* Touch-friendly enhancements */
+      .service-item,
+      .submit-btn,
+      .reset-btn,
+      .logout-btn {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+        touch-action: manipulation;
+      }
+
+      /* Improved focus states for accessibility */
+      .form-control:focus,
+      .search-input:focus,
+      #date-filter:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+
+      /* Better mobile scrolling for long lists */
+      .services-container {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Prevent zoom on iOS when focusing form inputs */
+      .form-control,
+      .search-input,
+      #date-filter {
+        font-size: 16px;
+      }
+
+      /* Enhanced mobile touch targets */
+      .service-item {
+        min-height: 48px;
+        padding: 12px 16px;
+      }
+
+      .service-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+      }
+
+      .submit-btn,
+      .reset-btn {
+        min-height: 44px;
+        padding: 12px 24px;
+      }
+
+      .logout-btn {
+        min-height: 44px;
+        padding: 12px 24px;
+      }
+
+      /* Granular Typography Scaling */
+      
+      /* Base typography scaling for mobile */
+      :root {
+        --heading-scale: 1;
+        --body-scale: 1;
+        --small-scale: 1;
+      }
+
+      /* Typography scaling for different screen sizes */
+      @media (max-width: 375px) {
+        :root {
+          --heading-scale: 0.9;
+          --body-scale: 0.95;
+          --small-scale: 0.9;
+        }
+      }
+
+      @media (min-width: 376px) and (max-width: 480px) {
+        :root {
+          --heading-scale: 0.92;
+          --body-scale: 0.96;
+          --small-scale: 0.92;
+        }
+      }
+
+      @media (min-width: 481px) and (max-width: 560px) {
+        :root {
+          --heading-scale: 0.94;
+          --body-scale: 0.98;
+          --small-scale: 0.94;
+        }
+      }
+
+      @media (min-width: 561px) and (max-width: 768px) {
+        :root {
+          --heading-scale: 0.96;
+          --body-scale: 0.99;
+          --small-scale: 0.96;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1024px) {
+        :root {
+          --heading-scale: 1;
+          --body-scale: 1;
+          --small-scale: 1;
+        }
+      }
+
+      @media (min-width: 1025px) {
+        :root {
+          --heading-scale: 1.05;
+          --body-scale: 1.02;
+          --small-scale: 1.02;
+        }
+      }
+
+      /* Apply typography scaling to headings */
+      .welcome-text h1 {
+        font-size: calc(2rem * var(--heading-scale));
+      }
+
+      .dashboard-title {
+        font-size: calc(1.5rem * var(--heading-scale));
+      }
+
+      .card-title {
+        font-size: calc(1.25rem * var(--heading-scale));
+      }
+
+      /* Apply typography scaling to body text */
+      .welcome-text p {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      .form-group label {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .form-control {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .service-name {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .service-price {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .total-label {
+        font-size: calc(0.875rem * var(--body-scale));
+      }
+
+      .total-amount {
+        font-size: calc(1.5rem * var(--heading-scale));
+      }
+
+      .submit-btn,
+      .reset-btn {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      /* Apply typography scaling to small text */
+      .summary-item .total-label {
+        font-size: calc(0.85rem * var(--small-scale));
+      }
+
+      .summary-item .total-sales-amount,
+      .summary-item #transaction-count {
+        font-size: calc(1.5rem * var(--heading-scale));
+      }
+
+      .current-date-range {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      .search-input {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .sales-table th {
+        font-size: calc(0.9rem * var(--small-scale));
+      }
+
+      .sales-table td {
+        font-size: calc(0.95rem * var(--small-scale));
+      }
+
+      .sale-amount {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      .service-tag {
+        font-size: calc(0.8rem * var(--small-scale));
+      }
+
+      .message {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .success-message {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      /* Mobile-specific optimizations */
+      @media (max-width: 768px) {
+        /* Increase form field sizes for mobile */
+        .form-control {
+          min-height: 44px;
+          padding: 12px 16px;
+          font-size: 16px;
+        }
+
+        /* Better spacing for mobile forms */
+        .form-group {
+          margin-bottom: 16px;
+        }
+
+        /* Larger service items for touch */
+        .service-item {
+          min-height: 52px;
+          padding: 14px 16px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 22px;
+          height: 22px;
+        }
+
+        /* Mobile-friendly submit buttons */
+        .submit-section {
+          gap: 12px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          min-height: 48px;
+          padding: 14px 24px;
+        }
+
+        /* Better mobile table scrolling */
+        .table-container {
+          border-radius: 8px;
+          border: 1px solid var(--border-color);
+          margin-bottom: 16px;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 12px 8px;
+          font-size: 14px;
+        }
+
+        /* Mobile search improvements */
+        .search-container {
+          gap: 12px;
+        }
+
+        .search-input {
+          min-height: 44px;
+          padding: 12px 16px;
+          font-size: 16px;
+        }
+
+        #date-filter {
+          min-height: 44px;
+          padding: 12px 16px;
+          font-size: 16px;
+        }
+
+        /* Mobile summary cards */
+        .sales-summary-card {
+          gap: 12px;
+        }
+
+        .summary-item {
+          padding: 12px;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 18px;
+        }
+      }
+
+      /* Loading Animation */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive Behavior Testing & Optimization */
+      
+      /* Screen size indicators for testing (can be removed in production) */
+      .screen-indicator {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: monospace;
+        z-index: 9999;
+        display: none;
+      }
+
+      /* Show screen size indicator on very small screens for testing */
+      @media (max-width: 480px) {
+        .screen-indicator {
+          display: block;
+        }
+      }
+
+      /* Responsive container optimization */
+      .sales-form-card {
+        /* Ensure proper shrinking behavior */
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* Enhanced mobile form layout */
+      @media (max-width: 480px) {
+        .sales-form-card {
+          /* Force smaller padding on very small screens */
+          padding: 1rem !important;
+          margin-bottom: 1rem;
+        }
+
+        .card-title {
+          font-size: 1rem !important;
+          margin-bottom: 0.75rem !important;
+        }
+
+        .form-group {
+          margin-bottom: 1rem !important;
+        }
+
+        .form-control {
+          font-size: 16px !important;
+          padding: 12px !important;
+          min-height: 44px !important;
+        }
+
+        .services-container {
+          padding: 8px !important;
+          max-height: 180px !important;
+        }
+
+        .service-item {
+          padding: 10px !important;
+          min-height: 44px !important;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 18px !important;
+          height: 18px !important;
+        }
+
+        .total-section {
+          padding: 10px !important;
+          margin-top: 10px !important;
+        }
+
+        .total-amount {
+          font-size: 1.1rem !important;
+        }
+
+        .submit-section {
+          gap: 8px !important;
+          margin-top: 1rem !important;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 10px !important;
+          font-size: 14px !important;
+          min-height: 40px !important;
+        }
+
+        /* Ensure form elements don't overflow */
+        .form-control,
+        .search-input,
+        #date-filter {
+          max-width: 100%;
+          box-sizing: border-box;
+        }
+      }
+
+      /* Ultra-small screen optimization (320px and below) */
+      @media (max-width: 320px) {
+        .sales-form-card {
+          padding: 0.75rem !important;
+        }
+
+        .card-title {
+          font-size: 0.9rem !important;
+          margin-bottom: 0.6rem !important;
+        }
+
+        .form-group {
+          margin-bottom: 0.8rem !important;
+        }
+
+        .form-control {
+          font-size: 14px !important;
+          padding: 10px !important;
+          min-height: 40px !important;
+        }
+
+        .services-container {
+          padding: 6px !important;
+          max-height: 160px !important;
+        }
+
+        .service-item {
+          padding: 8px !important;
+          min-height: 40px !important;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 16px !important;
+          height: 16px !important;
+        }
+
+        .total-section {
+          padding: 8px !important;
+          margin-top: 8px !important;
+        }
+
+        .total-amount {
+          font-size: 1rem !important;
+        }
+
+        .submit-section {
+          gap: 6px !important;
+          margin-top: 0.8rem !important;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 8px !important;
+          font-size: 13px !important;
+          min-height: 38px !important;
+        }
+      }
+
+      /* Portrait vs Landscape optimization */
+      @media (max-height: 500px) and (orientation: landscape) {
+        .sales-form-card {
+          padding: 1rem;
+          overflow-y: auto;
+          max-height: 70vh;
+        }
+
+        .services-container {
+          max-height: 150px;
+        }
+
+        .submit-section {
+          margin-top: 0.5rem;
+        }
+      }
+
+      /* High DPI/Retina display optimization */
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .sales-form-card {
+          border-width: 0.5px;
+        }
+
+        .form-control,
+        .services-container,
+        .total-section {
+          border-width: 1px;
+        }
+      }
+
+      /* Print optimization */
+      @media print {
+        body {
+          padding: 0;
+          background: white;
+        }
+
+        .container {
+          max-width: 100%;
+          padding: 0;
+        }
+
+        .dashboard-header,
+        .sales-history-card {
+          display: none;
+        }
+
+        .sales-form-card {
+          padding: 0;
+          border: none;
+          box-shadow: none;
+          background: white;
+        }
+
+        .submit-section {
+          display: none;
+        }
+
+        .message,
+        .success-message-container {
+          display: none;
+        }
+      }
+
+      /* Accessibility enhancements for responsive design */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        .sales-form-card {
+          border: 2px solid;
+        }
+
+        .form-control {
+          border-width: 2px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          border-width: 2px;
+        }
+      }
+
+      /* Dark mode support (if system supports it) */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background-color: #111827;
+          --card-background: #1f2937;
+          --text-primary: #f9fafb;
+          --text-secondary: #9ca3af;
+          --border-color: #374151;
+        }
+
+        body {
+          background-color: var(--background-color);
+          color: var(--text-primary);
+        }
+
+        .sales-form-card,
+        .sales-history-card,
+        .dashboard-header,
+        .dashboard-content {
+          background: var(--card-background);
+          border-color: var(--border-color);
+        }
+
+        .form-control,
+        .services-container,
+        .total-section,
+        .search-input {
+          background: white;
+          border-color: var(--border-color);
+        }
+
+        .service-item:hover {
+          background-color: #374151;
+        }
+
+        .service-item:active {
+          background-color: #4b5563;
+        }
+      }
+
+      /* Screen reader and keyboard navigation improvements */
+      .sales-form-card *:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+
+      /* Ensure proper tab order and focus management */
+      .sales-form-card {
+        outline: none;
+      }
+
+      .sales-form-card:focus-within {
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <div class="welcome-section">
+        <div class="welcome-text">
+          <h1>Welcome <span id="cashier-name">User</span></h1>
+          <p>
+            You are now logged in as a cashier. You can start processing
+            transactions.
+          </p>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-content">
+        <h2 class="dashboard-title">Cashier Functions</h2>
+
+        <div class="dashboard-main">
+          <!-- Sales Form Section -->
+          <div class="sales-form-card">
+            <h3 class="card-title">➕ Add New Sale</h3>
+
+            <!-- Success/Error Messages -->
+            <div id="message-container"></div>
+
+            <form id="sales-form">
+              <!-- Two-column layout for customer info and services -->
+              <div class="form-layout">
+                <!-- Left column: Customer Information -->
+                <div>
+                  <div class="form-group">
+                    <label for="customer-name">Customer Name</label>
+                    <input
+                      type="text"
+                      id="customer-name"
+                      class="form-control"
+                      placeholder="Enter customer name"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="customer-tp">Contact Number (TP)</label>
+                    <input
+                      type="tel"
+                      id="customer-tp"
+                      class="form-control"
+                      placeholder="Enter contact number"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Right column: Services Selection -->
+                <div>
+                  <div class="form-group">
+                    <label>Services</label>
+                    <div class="services-container" id="services-container">
+                      <!-- Services will be populated here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Calculation -->
+              <div class="total-section">
+                <div class="total-row">
+                  <span class="total-label">Selected Services:</span>
+                  <span id="services-count">0</span>
+                </div>
+                <div class="total-row">
+                  <span class="total-label">Total Amount:</span>
+                  <span class="total-amount" id="total-amount">Rs. 0.00</span>
+                </div>
+              </div>
+
+              <!-- Submit Section -->
+              <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submit-btn">
+                  <span id="submit-text">Save Sale</span>
+                  <span
+                    id="submit-loading"
+                    class="loading"
+                    style="display: none"
+                  ></span>
+                </button>
+                <button type="button" class="reset-btn" onclick="resetForm()">
+                  Reset Form
+                </button>
+              </div>
+
+              <!-- Success Message Container -->
+              <div
+                id="success-message-container"
+                class="success-message-container"
+              ></div>
+            </form>
+          </div>
+
+          <!-- Sales History Section -->
+          <div class="sales-history-card">
+            <div class="history-header">
+              <h3 class="card-title">📊 Sales History</h3>
+            </div>
+
+            <!-- Sales Summary Card -->
+            <div class="sales-summary-card">
+              <div class="summary-item">
+                <div class="total-label">Total Sales</div>
+                <div id="total-sales-amount" class="total-sales-amount">--</div>
+              </div>
+              <div class="summary-item">
+                <div class="total-label">Transaction Count</div>
+                <div id="transaction-count" class="total-sales-amount">0</div>
+              </div>
+              <div class="summary-item">
+                <div class="total-label">Date Range</div>
+                <div id="current-date-range" class="total-sales-amount">Today</div>
+              </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-container">
+              <input
+                type="text"
+                id="search-input"
+                class="search-input"
+                placeholder="Search by customer name or contact..."
+              />
+              <select
+                id="date-filter"
+                class="form-control"
+                style="width: 200px"
+              >
+                <option value="today">Today</option>
+                <option value="this_week">This Week</option>
+                <option value="this_month">This Month</option>
+              </select>
+              <button
+                onclick="searchSales()"
+                style="
+                  padding: 0.75rem 1.5rem;
+                  background: var(--primary-color);
+                  color: white;
+                  border: none;
+                  border-radius: 8px;
+                  font-weight: 600;
+                  cursor: pointer;
+                "
+              >
+                Search
+              </button>
+              <button
+                onclick="clearSearch()"
+                style="
+                  padding: 0.75rem 1rem;
+                  background: #94a3b8;
+                  color: white;
+                  border: none;
+                  border-radius: 8px;
+                  font-weight: 600;
+                  cursor: pointer;
+                "
+              >
+                Clear
+              </button>
+            </div>
+
+            <!-- Sales Table -->
+            <div class="table-container">
+              <table class="sales-table">
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Customer</th>
+                    <th>Services</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-table-body">
+                  <!-- Sales data will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const servicesContainer = document.getElementById("services-container");
+      const totalAmountElement = document.getElementById("total-amount");
+      const servicesCountElement = document.getElementById("services-count");
+      const salesTableBody = document.getElementById("sales-table-body");
+      const searchInput = document.getElementById("search-input");
+      const messageContainer = document.getElementById("message-container");
+      const submitBtn = document.getElementById("submit-btn");
+      const submitText = document.getElementById("submit-text");
+      const submitLoading = document.getElementById("submit-loading");
+      const salesForm = document.getElementById("sales-form");
+      const cashierNameElement = document.getElementById("cashier-name");
+      const currentDateRangeElement =
+        document.getElementById("current-date-range");
+
+      cashierNameElement.textContent = localStorage.getItem("cashierName");
+
+      // Initialize the dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        renderServices();
+        renderSalesHistory();
+
+        // Add event listeners for service checkboxes
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((checkbox) => {
+            checkbox.addEventListener("change", calculateTotal);
+          });
+      });
+
+      // Render Services
+      async function renderServices() {
+        servicesContainer.innerHTML = "";
+
+        const response = await fetch("/api/admin/services");
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+          const services = result.data;
+          services.forEach((service) => {
+            const serviceItem = document.createElement("div");
+            serviceItem.className = "service-item";
+            serviceItem.innerHTML = `
+                                        <input type="checkbox" id="service-${service.id}" value="${service.id}" data-price="${service.price}">
+                                        <div class="service-info">
+                                            <span class="service-name">${service.service_name}</span>
+                                            <span class="service-price">Rs. ${service.price.toLocaleString()}</span>
+                                        </div>
+                                    `;
+            servicesContainer.appendChild(serviceItem);
+          });
+        } else {
+          console.error("Failed to load services:", result.message);
+          servicesContainer.innerHTML = `
+                                <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                    Failed to load services. Please try again later.
+                                </div>
+                            `;
+          return;
+        }
+
+        // Add event listeners
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((checkbox) => {
+            checkbox.addEventListener("change", calculateTotal);
+          });
+      }
+
+      // Calculate Total Amount
+      function calculateTotal() {
+        let total = 0;
+        let selectedCount = 0;
+
+        document
+          .querySelectorAll('input[type="checkbox"]:checked')
+          .forEach((checkbox) => {
+            total += parseFloat(checkbox.dataset.price);
+            selectedCount++;
+          });
+
+        totalAmountElement.textContent = `Rs. ${total.toLocaleString()}`;
+        servicesCountElement.textContent = selectedCount;
+      }
+
+      // Render Sales History with filter support
+      // Render Sales History with filter support
+      async function renderSalesHistory(filter = "", dateFilter = "today") {
+        currentDateRangeElement.textContent = dateFilter.replace("_", " ");
+        salesTableBody.innerHTML = "";
+
+        try {
+          // Fetch services for name mapping
+          const servicesResponse = await fetch("/api/admin/services");
+          const servicesResult = await servicesResponse.json();
+          const services =
+            servicesResult.success && Array.isArray(servicesResult.data)
+              ? servicesResult.data
+              : [];
+
+          // Fetch sales for current cashier with date filter
+          const cashierId = getCurrentCashierId();
+          console.log("Fetching sales for cashier ID:", cashierId);
+
+          // Build query parameters
+          const params = new URLSearchParams({
+            cashierId: cashierId,
+            dateFilter: dateFilter,
+          });
+
+          if (filter) {
+            params.append("search", filter);
+          }
+
+          console.log(
+            "API Request - cashierId:",
+            cashierId,
+            "dateFilter:",
+            dateFilter,
+            "params:",
+            params.toString(),
+          );
+
+          const salesResponse = await fetch(`/api/sales?${params.toString()}`);
+          const salesResult = await salesResponse.json();
+
+          console.log(
+            "API Response - filter used:",
+            salesResult.filter,
+            "data length:",
+            salesResult.data.length,
+          );
+
+          let salesData = [];
+          if (salesResult.success && Array.isArray(salesResult.data)) {
+            salesData = salesResult.data;
+          }
+
+          // Apply search filter if provided (for backward compatibility)
+          let filteredSales = salesData;
+          if (filter) {
+            filteredSales = salesData.filter(
+              (sale) =>
+                sale.customer_name
+                  .toLowerCase()
+                  .includes(filter.toLowerCase()) ||
+                sale.customer_tp.includes(filter),
+            );
+          }
+
+          // NEW: Use API-provided totals instead of calculating client-side
+          const totalSalesAmount = salesResult.totalSalesAmount || 0;
+          const transactionCount = salesResult.transactionCount || 0;
+
+          // Format currency function
+          function formatCurrency(amount) {
+            return `Rs. ${amount.toLocaleString()}`;
+          }
+
+          // Update the total sales display with API-provided value
+          document.getElementById("total-sales-amount").textContent =
+            formatCurrency(totalSalesAmount);
+
+          // Update transaction count (this was already working)
+          document.getElementById("transaction-count").textContent =
+            transactionCount;
+
+          if (filteredSales.length === 0) {
+            salesTableBody.innerHTML = `
+        <tr>
+            <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                No sales records found
+            </td>
+        </tr>
+      `;
+            return;
+          }
+
+          // Render sales data (unchanged)
+          filteredSales.forEach((sale) => {
+            const row = document.createElement("tr");
+
+            // Get service names for display
+            const serviceNames = sale.services.map((service) => {
+              const serviceId = service.service_id; // Extract service_id from the object
+              const serviceObj = services.find((s) => s.id === serviceId);
+              return serviceObj ? serviceObj.service_name : "Unknown Service";
+            });
+
+            row.innerHTML = `
+        <td data-label="Date & Time">${formatDate(sale.sale_date)}</td>
+        <td data-label="Customer">
+            <div><strong>${sale.customer_name}</strong></div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">${sale.customer_tp}</div>
+        </td>
+        <td data-label="Services">
+            <div class="services-list">
+                ${serviceNames.map((name) => `<span class="service-tag">${name}</span>`).join("")}
+            </div>
+        </td>
+        <td data-label="Total" class="sale-amount">Rs. ${sale.total_amount.toLocaleString()}</td>
+      `;
+            salesTableBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Error fetching sales history:", error);
+          salesTableBody.innerHTML = `
+      <tr>
+          <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+              Error loading sales history. Please try again later.
+          </td>
+      </tr>
+    `;
+        }
+      }
+
+      // Format Date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString("en-US", {
+          month: "numeric",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).replace(',', ' ,');
+      }
+
+      // Search Sales
+      function searchSales() {
+        const searchTerm = searchInput.value.trim();
+        const dateFilter = document.getElementById("date-filter").value;
+
+        renderSalesHistory(searchTerm, dateFilter);
+      }
+
+      // Clear Search
+      function clearSearch() {
+        searchInput.value = "";
+        document.getElementById("date-filter").value = "today"; // Reset dropdown to default
+        renderSalesHistory("", "today");
+      }
+
+      // Add event listener for dropdown change
+      document
+        .getElementById("date-filter")
+        .addEventListener("change", function () {
+          const searchTerm = searchInput.value.trim();
+          const dateFilter = this.value;
+          renderSalesHistory(searchTerm, dateFilter);
+        });
+
+      // Form Validation
+      function validateForm() {
+        const customerName = document
+          .getElementById("customer-name")
+          .value.trim();
+        const customerTp = document.getElementById("customer-tp").value.trim();
+        const selectedServices = document.querySelectorAll(
+          'input[type="checkbox"]:checked',
+        );
+
+        let isValid = true;
+        let errorMessage = "";
+
+        if (!customerName) {
+          errorMessage = "Please enter customer name";
+          isValid = false;
+        } else if (!customerTp) {
+          errorMessage = "Please enter contact number";
+          isValid = false;
+        } else if (!/^\d{10}$/.test(customerTp)) {
+          errorMessage = "Please enter a valid 10-digit contact number";
+          isValid = false;
+        } else if (selectedServices.length === 0) {
+          errorMessage = "Please select at least one service";
+          isValid = false;
+        }
+
+        if (!isValid) {
+          showMessage(errorMessage, "error");
+        }
+
+        return isValid;
+      }
+
+      // Show Message
+      function showMessage(message, type) {
+        messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+        setTimeout(() => {
+          messageContainer.innerHTML = "";
+        }, 5000);
+      }
+
+      // Show Success Message near Submit Button
+      function showSuccessMessage(message) {
+        const container = document.getElementById("success-message-container");
+        container.innerHTML = `<div class="success-message">${message}</div>`;
+
+        // Auto-hide after 2 seconds
+        setTimeout(() => {
+          container.innerHTML = "";
+        }, 2000);
+      }
+
+      // Reset Form
+      function resetForm() {
+        document.getElementById("customer-name").value = "";
+        document.getElementById("customer-tp").value = "";
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((checkbox) => {
+            checkbox.checked = false;
+          });
+        calculateTotal();
+        showMessage("Form reset successfully", "warning");
+      }
+
+      function getCurrentCashierId() {
+        return localStorage.getItem("cashierId") || "1";
+      }
+
+      // Submit Form
+      salesForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        if (!validateForm()) {
+          return;
+        }
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitText.style.display = "none";
+        submitLoading.style.display = "inline-block";
+
+        // Get form data
+        const customerName = document
+          .getElementById("customer-name")
+          .value.trim();
+        const customerTp = document.getElementById("customer-tp").value.trim();
+        const selectedServices = [];
+        let totalAmount = 0;
+
+        document
+          .querySelectorAll('input[type="checkbox"]:checked')
+          .forEach((checkbox) => {
+            selectedServices.push(parseInt(checkbox.value));
+            totalAmount += parseFloat(checkbox.dataset.price);
+          });
+
+        // Replace the setTimeout block with:
+        try {
+          const response = await fetch("/api/sales", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              customerName: customerName,
+              customerTp: customerTp,
+              services: selectedServices,
+              date: new Date().toISOString(),
+              totalAmount: totalAmount,
+              cashierId: getCurrentCashierId(),
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Success: show success message near submit button for 2 seconds
+            showSuccessMessage("Sale recorded successfully!");
+
+            // Reset form after 2 seconds to allow user to see success message
+            setTimeout(() => {
+              resetForm();
+              renderSalesHistory(); // Refresh from database
+            }, 2000);
+          } else {
+            // Error: show error message
+            showMessage(result.message || "Failed to save sale", "error");
+          }
+        } catch (error) {
+          console.error("Submit error:", error);
+          showMessage("Network error. Please try again.", "error");
+        } finally {
+          // Reset button state
+          submitBtn.disabled = false;
+          submitText.style.display = "inline";
+          submitLoading.style.display = "none";
+        }
+      });
+
+      // Logout Function
+      function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+          window.location.href = "/";
+        }
+      }
+
+      // Add Enter key support for search
+      searchInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          searchSales();
+        }
+      });
+    </script>
+  </body>
+</html>

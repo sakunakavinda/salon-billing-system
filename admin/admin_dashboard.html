@@ -1,0 +1,2855 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Salon System</title>
+    <style>
+      :root {
+        --primary-color: #0091ff;
+        --secondary-color: #a78bfa;
+        --background-color: #f8fafc;
+        --sidebar-bg: #1e293b;
+        --card-background: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --text-light: #f8fafc;
+        --border-color: #e2e8f0;
+        --shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-hover:
+          0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --sidebar-width: 280px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        height: 100vh;
+        display: flex;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        width: var(--sidebar-width);
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: var(--text-light);
+        height: 100%;
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 2rem 0;
+        box-shadow: var(--shadow-hover);
+        z-index: 1000;
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar-header {
+        position: relative;
+        padding: 1.5rem 2rem 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      /* Floating Mobile Menu Toggle */
+      .floating-mobile-toggle {
+        display: none;
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.25rem;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+      }
+
+      .floating-mobile-toggle:hover {
+        transform: scale(1.1);
+      }
+
+      .sidebar-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .sidebar-subtitle {
+        font-size: 0.875rem;
+        color: (var(--sidebar-bg));
+      }
+
+      .nav-menu {
+        list-style: none;
+      }
+
+      .nav-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem 2rem;
+        color: var(--text-light);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+        min-height: 60px;
+      }
+
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-left-color: var(--primary-color);
+      }
+
+      .nav-link.active {
+        background: rgba(255, 255, 255, 0.1);
+        border-left-color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      .nav-icon {
+        font-size: 1.25rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        padding: 2rem;
+        transition: margin-left 0.3s ease;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: var(--text-light);
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+
+      .header-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--card-background);
+        flex: 1;
+        margin-right: 1rem;
+      }
+
+      /* Close Sidebar Button */
+      .close-sidebar-btn {
+        display: none;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.25rem;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .close-sidebar-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: #f1f5f9;
+        color: var(--sidebar-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: white;
+      }
+
+      .logout-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s ease;
+      }
+
+      .logout-btn:hover {
+        background: #dc2626;
+      }
+
+      /* Dashboard Content */
+      .dashboard-content {
+        background: linear-gradient(135deg, var(--card-background), #e2e8f0);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        min-height: 60vh;
+      }
+
+      .content-title {
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 1rem;
+      }
+
+      /* Dashboard Cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .stat-card {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: var(--shadow-hover);
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Services and Cashiers Lists */
+      .list-section {
+        margin-top: 2rem;
+      }
+
+      .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: transform 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: #64748b;
+      }
+
+      .btn-danger {
+        background: #ef4444;
+      }
+
+      .btn-success {
+        background: #10b981;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: linear-gradient(135deg, var(--card-background), #f1f5f9);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .table th,
+      .table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .table th {
+        background: #f8fafc;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .status-active {
+        background-color: #dcfce7;
+        color: #166534;
+      }
+
+      .status-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* Hidden Content */
+      .content-section {
+        display: none;
+      }
+
+      .content-section.active {
+        display: block;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.3s ease,
+          visibility 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 500px;
+        box-shadow:
+          0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-20px);
+        transition: transform 0.3s ease;
+        position: relative;
+      }
+
+      .modal-overlay.active .modal {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 1rem;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .modal-close:hover {
+        background: #f1f5f9;
+        color: var(--text-primary);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+      }
+
+      .required {
+        color: #ef4444;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+        background: white;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 145, 255, 0.1);
+      }
+
+      .form-input.error {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      }
+
+      .form-textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+        background: white;
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 145, 255, 0.1);
+      }
+
+      .form-textarea.error {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      }
+
+      .form-help {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+      }
+
+      .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .success-message {
+        color: #166534;
+        background-color: #dcfce7;
+        border: 1px solid #bbf7d0;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: none;
+      }
+
+      .success-message.show {
+        display: block;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 2px solid #e2e8f0;
+      }
+
+      .loading-spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f4f6;
+        border-top: 2px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-spinner.show {
+        display: inline-block;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        :root {
+          --sidebar-width: 100%;
+        }
+
+        .floating-mobile-toggle {
+          display: flex;
+        }
+
+        .close-sidebar-btn {
+          display: flex;
+        }
+
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: -100%;
+          height: 100vh;
+          z-index: 2000;
+          transition: left 0.3s ease;
+        }
+
+        .sidebar.active {
+          left: 0;
+        }
+
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+          padding: 1.5rem;
+        }
+
+        .header {
+          position: relative;
+          padding: 1.5rem 4rem 1.5rem 2rem;
+          flex-direction: row;
+          align-items: flex-start;
+        }
+
+        .header-title {
+          margin-right: 1rem;
+          font-size: 1.25rem;
+        }
+
+        .dashboard-content {
+          padding: 1.5rem;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .stat-card {
+          padding: 1.5rem;
+        }
+
+        .stat-number {
+          font-size: 2rem;
+        }
+
+        .content-title {
+          font-size: 1.125rem;
+        }
+
+        .table {
+          font-size: 0.875rem;
+        }
+
+        .table th,
+        .table td {
+          padding: 0.75rem;
+        }
+
+        .nav-link {
+          padding: 1.5rem 2rem;
+          font-size: 1rem;
+        }
+
+        .modal {
+          margin: 1rem;
+          max-width: calc(100% - 2rem);
+        }
+      }
+
+      /* Extra small screen improvements */
+      @media (max-width: 480px) {
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 1.5rem 2rem;
+        }
+
+        .header-title {
+          margin-right: 0;
+          font-size: 1.125rem;
+        }
+
+        .user-info {
+          align-self: flex-end;
+          margin-top: auto;
+        }
+
+        .sidebar-title {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+          font-size: 0.75rem;
+        }
+
+        .close-sidebar-btn {
+          top: 1.5rem;
+          right: 1.5rem;
+        }
+
+        .main-content {
+          padding: 1rem;
+        }
+
+        .dashboard-content {
+          padding: 1rem;
+        }
+
+        .modal {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- Floating Mobile Toggle -->
+    <button class="floating-mobile-toggle" onclick="toggleSidebar()">
+      <span>☰</span>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Admin Panel</div>
+        <button class="close-sidebar-btn" onclick="toggleSidebar()">
+          <span>✕</span>
+        </button>
+        <div class="sidebar-subtitle">Salon Management System</div>
+      </div>
+
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="#" class="nav-link active" data-section="dashboard">
+            <span class="nav-icon">📊</span>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-section="services">
+            <span class="nav-icon">✂️</span>
+            Services
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-section="cashiers">
+            <span class="nav-icon">👥</span>
+            Cashiers
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-section="sales">
+            <span class="nav-icon">💰</span>
+            View Sales
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <div class="header-title" id="page-title">Dashboard</div>
+        <div class="user-info">
+          <div class="user-avatar" id="user-initials">A</div>
+          <div>
+            <div style="font-weight: 600" id="username-display">Admin user</div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary)">
+              Administrator
+            </div>
+          </div>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="content-section active dashboard-content">
+        <h2 class="content-title">System Overview</h2>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="total-services">0</div>
+            <div class="stat-label">Total Services</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="active-cashiers">0</div>
+            <div class="stat-label">Active Cashiers</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="today-income">0</div>
+            <div class="stat-label">Today's Income</div>
+          </div>
+        </div>
+
+        <div class="welcome-section">
+          <h3>Welcome to the Admin Dashboard</h3>
+          <p style="color: var(--text-secondary); margin-top: 1rem">
+            Use the sidebar navigation to manage services, view cashier
+            information, and monitor system statistics.
+          </p>
+        </div>
+      </section>
+
+      <!-- Services Section -->
+      <section id="services" class="content-section">
+        <h2 class="content-title">Services Management</h2>
+
+        <div class="list-header">
+          <h3>Service List</h3>
+          <button class="btn" onclick="addService()">Add New Service</button>
+        </div>
+
+        <div class="success-message" id="services-success-message"></div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Service ID</th>
+                <th>Service Name</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="services-table-body">
+              <!-- Services will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Cashiers Section -->
+      <section id="cashiers" class="content-section">
+        <h2 class="content-title">Cashier Management</h2>
+
+        <div class="list-header">
+          <h3>Cashier List</h3>
+          <button class="btn" onclick="addCashier()">Add New Cashier</button>
+        </div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cashiers-table-body">
+              <!-- Cashiers will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Sales Section -->
+      <section id="sales" class="content-section">
+        <h2 class="content-title">Sales Overview</h2>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div class="sales-toggle-container" style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-sm active" style="padding: 0.4rem 1rem; font-size: 0.875rem; border-radius: 9999px; background: var(--primary-color); color: white; border: none; cursor: pointer; transition: all 0.2s ease;" onclick="setSalesView('today', this)" id="btn-sales-today">Today</button>
+            <button class="btn btn-sm" style="padding: 0.4rem 1rem; font-size: 0.875rem; border-radius: 9999px; background: white; color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s ease;" onclick="setSalesView('week', this)" id="btn-sales-week">Weekly</button>
+            <button class="btn btn-sm" style="padding: 0.4rem 1rem; font-size: 0.875rem; border-radius: 9999px; background: white; color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s ease;" onclick="setSalesView('month', this)" id="btn-sales-month">Monthly</button>
+            <button class="btn btn-sm" style="padding: 0.4rem 1rem; font-size: 0.875rem; border-radius: 9999px; background: white; color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s ease;" onclick="setSalesView('custom', this)" id="btn-sales-custom">Custom</button>
+            <input type="date" id="sales-custom-date" style="display: none; padding: 0.3rem 0.6rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.875rem;" onchange="loadSalesData('custom')">
+          </div>
+          
+          <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);">Cashier:</span>
+              <select id="sales-cashier-filter" class="form-input" style="width: auto; padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.875rem; min-width: 150px;" onchange="loadSalesData(window.currentSalesFilter || 'today')">
+                <option value="">All Cashiers</option>
+              </select>
+            </div>
+            <div style="font-size: 1rem; font-weight: 600; color: var(--text-primary); padding: 0.4rem 1rem; background: var(--background-color); border-radius: 8px; border: 1px solid var(--border-color);">
+              Total: <span id="sales-total-display" style="color: var(--primary-color);">LKR 0.00</span>
+            </div>
+            <button class="btn btn-sm" onclick="openDailySalesModal()" style="padding: 0.4rem 1rem; font-size: 0.875rem; border-radius: 9999px; background: white; color: var(--primary-color); border: 1px solid var(--primary-color); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              View Daily Sales Chart
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem;">
+          <!-- Chart Container -->
+          <div style="flex: 1; min-width: 300px; max-width: 400px; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: flex-start; margin: 0 auto; min-height: 400px;">
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Services Breakdown</h3>
+            <div style="width: 100%; position: relative; display: flex; justify-content: center; align-items: center; min-height: 250px;">
+              <canvas id="servicesPieChart"></canvas>
+            </div>
+            <div id="no-chart-data" style="display: none; color: var(--text-secondary); text-align: center; padding: 2rem 0; width: 100%;">No service data available</div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="table-container" style="flex: 2; min-width: 300px;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Cashier</th>
+                  <th>Services</th>
+                  <th>Total Amount</th>
+                  <th>Payment Method</th>
+                </tr>
+              </thead>
+              <tbody id="sales-table-body">
+                <!-- Sales will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Add Service Modal -->
+    <div class="modal-overlay" id="add-service-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Add New Service</h3>
+          <button class="modal-close" onclick="closeAddServiceModal()">
+            &times;
+          </button>
+        </div>
+
+        <div class="success-message" id="modal-success-message"></div>
+
+        <form id="add-service-form">
+          <div class="form-group">
+            <label class="form-label" for="service-name">
+              Service Name <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="service-name"
+              class="form-input"
+              placeholder="Enter service name"
+              maxlength="100"
+            />
+            <div class="form-help">
+              Service name must be between 2 and 100 characters
+            </div>
+            <div class="error-message" id="name-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="service-price">
+              Price <span class="required">*</span>
+            </label>
+            <input
+              type="number"
+              id="service-price"
+              class="form-input"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              max="9999.99"
+            />
+            <div class="form-help">
+              Enter the service price (must be greater than 0)
+            </div>
+            <div class="error-message" id="price-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="service-description">
+              Description
+            </label>
+            <textarea
+              id="service-description"
+              class="form-textarea"
+              placeholder="Enter service description (optional)"
+              maxlength="500"
+            ></textarea>
+            <div class="form-help">
+              Optional description of the service (maximum 500 characters)
+            </div>
+            <div class="error-message" id="description-error"></div>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeAddServiceModal()"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="submit-service-btn"
+            >
+              <span class="loading-spinner" id="submit-spinner"></span>
+              <span id="submit-btn-text">Add Service</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Cashier Modal -->
+    <div class="modal-overlay" id="delete-cashier-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Delete Cashier</h3>
+          <button class="modal-close" onclick="closeDeleteCashierModal()">
+            &times;
+          </button>
+        </div>
+        <p style="margin-bottom: 2rem">
+          Are you sure you want to delete this cashier? This action cannot be
+          undone.
+        </p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeDeleteCashierModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-danger"
+            id="confirm-delete-cashier-btn"
+            onclick="confirmDeleteCashier()"
+          >
+            <span class="loading-spinner" id="delete-cashier-spinner"></span>
+            <span id="delete-cashier-btn-text">Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Sales Chart Modal -->
+    <div class="modal-overlay" id="daily-sales-modal">
+      <div class="modal" style="max-width: 800px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Daily Sales Overview</h3>
+          <button class="modal-close" onclick="closeDailySalesModal()">
+            &times;
+          </button>
+        </div>
+        <div style="width: 100%; position: relative; display: flex; justify-content: center; align-items: center; min-height: 400px; padding: 1rem;">
+          <canvas id="dailySalesBarChart"></canvas>
+          <div id="no-daily-chart-data" style="display: none; color: var(--text-secondary); text-align: center; width: 100%;">No daily sales data available for this period.</div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeDailySalesModal()">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Cashier Modal -->
+    <div class="modal-overlay" id="add-cashier-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Add New Cashier</h3>
+          <button class="modal-close" onclick="closeAddCashierModal()">
+            &times;
+          </button>
+        </div>
+
+        <div class="success-message" id="cashier-success-message"></div>
+
+        <form id="add-cashier-form">
+          <div class="form-group">
+            <label class="form-label" for="cashier-username">
+              Username <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="cashier-username"
+              class="form-input"
+              placeholder="Enter cashier username"
+              maxlength="50"
+            />
+            <div class="form-help">
+              Username must be unique and between 3 and 50 characters
+            </div>
+            <div class="error-message" id="username-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cashier-password">
+              Password <span class="required">*</span>
+            </label>
+            <input
+              type="password"
+              id="cashier-password"
+              class="form-input"
+              placeholder="Enter 4-digit PIN"
+              minlength="4"
+              maxlength="4"
+              pattern="[0-9]{4}"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+            />
+            <div class="form-help">PIN must be exactly 4 digits (0-9)</div>
+            <div class="error-message" id="password-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cashier-confirm-password">
+              Confirm PIN <span class="required">*</span>
+            </label>
+            <input
+              type="password"
+              id="cashier-confirm-password"
+              class="form-input"
+              placeholder="Confirm PIN"
+              minlength="4"
+              maxlength="4"
+              pattern="[0-9]{4}"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+            />
+            <div class="form-help">Please confirm your password</div>
+            <div class="error-message" id="confirm-password-error"></div>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeAddCashierModal()"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="submit-cashier-btn"
+            >
+              <span class="loading-spinner" id="cashier-spinner"></span>
+              <span id="cashier-btn-text">Add Cashier</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit Service Modal -->
+    <div class="modal-overlay" id="edit-service-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Edit Service</h3>
+          <button class="modal-close" onclick="closeEditServiceModal()">
+            &times;
+          </button>
+        </div>
+
+        <div class="success-message" id="edit-service-success-message"></div>
+
+        <form id="edit-service-form">
+          <input type="hidden" id="edit-service-id" />
+
+          <div class="form-group">
+            <label class="form-label" for="edit-service-name">
+              Service Name <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="edit-service-name"
+              class="form-input"
+              placeholder="Enter service name"
+              maxlength="100"
+            />
+            <div class="form-help">
+              Service name must be between 2 and 100 characters
+            </div>
+            <div class="error-message" id="edit-name-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-service-price">
+              Price <span class="required">*</span>
+            </label>
+            <input
+              type="number"
+              id="edit-service-price"
+              class="form-input"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              max="9999.99"
+            />
+            <div class="form-help">
+              Enter the service price (must be greater than 0)
+            </div>
+            <div class="error-message" id="edit-price-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-service-description">
+              Description
+            </label>
+            <textarea
+              id="edit-service-description"
+              class="form-textarea"
+              placeholder="Enter service description (optional)"
+              maxlength="500"
+            ></textarea>
+            <div class="form-help">
+              Optional description of the service (maximum 500 characters)
+            </div>
+            <div class="error-message" id="edit-description-error"></div>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeEditServiceModal()"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="submit-edit-service-btn"
+            >
+              <span class="loading-spinner" id="edit-submit-spinner"></span>
+              <span id="edit-submit-btn-text">Update Service</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Get username from URL or localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      const username = urlParams.get("username") || "Admin";
+
+      // Set username in UI
+      document.getElementById("username-display").textContent = username;
+      document.getElementById("user-initials").textContent = username
+        .charAt(0)
+        .toUpperCase();
+
+      // Mobile sidebar toggle
+      window.toggleSidebar = function () {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("active");
+      };
+
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener("click", function (e) {
+        const sidebar = document.getElementById("sidebar");
+        const floatingToggleBtn = document.querySelector(
+          ".floating-mobile-toggle",
+        );
+
+        // Check if screen is mobile size
+        if (window.innerWidth <= 768) {
+          // If clicked outside sidebar and toggle button, close sidebar
+          if (
+            !sidebar.contains(e.target) &&
+            !floatingToggleBtn.contains(e.target)
+          ) {
+            sidebar.classList.remove("active");
+          }
+        }
+      });
+
+      // Handle window resize
+      window.addEventListener("resize", function () {
+        const sidebar = document.getElementById("sidebar");
+        // Auto-close sidebar on desktop
+        if (window.innerWidth > 768) {
+          sidebar.classList.remove("active");
+        }
+      });
+
+      // Navigation functionality
+      const navLinks = document.querySelectorAll(".nav-link");
+      const contentSections = document.querySelectorAll(".content-section");
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+
+          const targetSection = link.getAttribute("data-section");
+
+          // Update active navigation
+          navLinks.forEach((nav) => nav.classList.remove("active"));
+          link.classList.add("active");
+
+          // Update page title
+          document.getElementById("page-title").textContent =
+            link.textContent.trim();
+
+          // Show target section
+          contentSections.forEach((section) => {
+            section.classList.remove("active");
+            if (section.id === targetSection) {
+              section.classList.add("active");
+            }
+          });
+
+          // Close sidebar on mobile after navigation
+          if (window.innerWidth <= 768) {
+            document.getElementById("sidebar").classList.remove("active");
+          }
+        });
+      });
+
+      // Logout function
+      window.logout = function () {
+        if (confirm("Are you sure you want to logout?")) {
+          window.location.href = "/";
+        }
+      };
+
+      // Add Service Modal Functions
+      window.addService = function () {
+        const modal = document.getElementById("add-service-modal");
+        const form = document.getElementById("add-service-form");
+
+        // Reset form and clear any previous errors
+        form.reset();
+        clearFormErrors();
+        hideSuccessMessage();
+
+        // Show modal
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden"; // Prevent background scrolling
+
+        // Focus on first input
+        setTimeout(() => {
+          document.getElementById("service-name").focus();
+        }, 300);
+      };
+
+      window.closeAddServiceModal = function () {
+        const modal = document.getElementById("add-service-modal");
+        modal.classList.remove("active");
+        document.body.style.overflow = ""; // Re-enable background scrolling
+      };
+
+      // Close modal when clicking outside
+      document
+        .getElementById("add-service-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeAddServiceModal();
+          }
+        });
+
+      // Form validation and submission
+      document
+        .getElementById("add-service-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const name = document.getElementById("service-name").value.trim();
+          const price = document.getElementById("service-price").value;
+          const description = document
+            .getElementById("service-description")
+            .value.trim();
+
+          // Validate form
+          const errors = validateServiceForm(name, price, description);
+
+          if (Object.keys(errors).length > 0) {
+            showFormErrors(errors);
+            return;
+          }
+
+          // Show loading state
+          setSubmitButtonLoading(true);
+
+          try {
+            // Send request to API
+            const response = await fetch("/api/admin/services", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: name,
+                price: parseFloat(price),
+                description: description || null,
+              }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              // Success
+              showSuccessMessage("Service added successfully!");
+
+              // Reset form
+              document.getElementById("add-service-form").reset();
+              clearFormErrors();
+
+              // Refresh services table
+              loadServices();
+
+              // Close modal after short delay
+              setTimeout(() => {
+                closeAddServiceModal();
+                hideSuccessMessage();
+              }, 2000);
+            } else {
+              // Server error
+              showFormErrors({
+                general: result.message || "Failed to add service",
+              });
+            }
+          } catch (error) {
+            console.error("Error adding service:", error);
+            showFormErrors({ general: "Network error. Please try again." });
+          } finally {
+            setSubmitButtonLoading(false);
+          }
+        });
+
+      // Real-time validation
+      document
+        .getElementById("service-name")
+        .addEventListener("input", function () {
+          const name = this.value.trim();
+          const error = validateServiceName(name);
+          showFieldError("name-error", error);
+        });
+
+      document
+        .getElementById("service-price")
+        .addEventListener("input", function () {
+          const price = this.value;
+          const error = validateServicePrice(price);
+          showFieldError("price-error", error);
+        });
+
+      document
+        .getElementById("service-description")
+        .addEventListener("input", function () {
+          const description = this.value.trim();
+          const error = validateServiceDescription(description);
+          showFieldError("description-error", error);
+        });
+
+      // Validation functions
+      function validateServiceForm(name, price, description) {
+        const errors = {};
+
+        const nameError = validateServiceName(name);
+        if (nameError) errors.name = nameError;
+
+        const priceError = validateServicePrice(price);
+        if (priceError) errors.price = priceError;
+
+        const descriptionError = validateServiceDescription(description);
+        if (descriptionError) errors.description = descriptionError;
+
+        return errors;
+      }
+
+      function validateServiceName(name) {
+        if (!name) return "Service name is required";
+        if (name.length < 2)
+          return "Service name must be at least 2 characters";
+        if (name.length > 100)
+          return "Service name cannot exceed 100 characters";
+        return null;
+      }
+
+      function validateServicePrice(price) {
+        if (!price && price !== 0) return "Price is required";
+        const numPrice = parseFloat(price);
+        if (isNaN(numPrice)) return "Price must be a valid number";
+        if (numPrice <= 0) return "Price must be greater than 0";
+        if (numPrice > 9999.99) return "Price cannot exceed 9999.99";
+        return null;
+      }
+
+      function validateServiceDescription(description) {
+        if (description && description.length > 500) {
+          return "Description cannot exceed 500 characters";
+        }
+        return null;
+      }
+
+      // UI helper functions
+      function showFormErrors(errors) {
+        // Clear previous errors
+        clearFormErrors();
+
+        // Show field-specific errors
+        Object.keys(errors).forEach((field) => {
+          if (field !== "general") {
+            const errorElement = document.getElementById(field + "-error");
+            if (errorElement) {
+              errorElement.textContent = errors[field];
+              errorElement.classList.add("show");
+
+              // Add error styling to input
+              const input = document.getElementById("service-" + field);
+              if (input) {
+                input.classList.add("error");
+              }
+            }
+          }
+        });
+
+        // Show general error if exists
+        if (errors.general) {
+          showSuccessMessage(errors.general, true);
+        }
+      }
+
+      function clearFormErrors() {
+        const errorElements = document.querySelectorAll(".error-message");
+        errorElements.forEach((el) => {
+          el.classList.remove("show");
+          el.textContent = "";
+        });
+
+        const inputs = document.querySelectorAll(".form-input, .form-textarea");
+        inputs.forEach((input) => input.classList.remove("error"));
+      }
+
+      function showFieldError(elementId, error) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+          errorElement.textContent = error || "";
+          errorElement.classList.toggle("show", !!error);
+
+          // Add/remove error styling to input
+          const field = elementId.replace("-error", "");
+          const input = document.getElementById("service-" + field);
+          if (input) {
+            input.classList.toggle("error", !!error);
+          }
+        }
+      }
+
+      function showSuccessMessage(message, isError = false) {
+        const successMessage = document.getElementById("modal-success-message");
+        successMessage.textContent = message;
+        successMessage.style.backgroundColor = isError ? "#fee2e2" : "#dcfce7";
+        successMessage.style.borderColor = isError ? "#fecaca" : "#bbf7d0";
+        successMessage.style.color = isError ? "#991b1b" : "#166534";
+        successMessage.classList.add("show");
+      }
+
+      function hideSuccessMessage() {
+        const successMessage = document.getElementById("modal-success-message");
+        successMessage.classList.remove("show");
+        successMessage.textContent = "";
+      }
+
+      function setSubmitButtonLoading(loading) {
+        const submitBtn = document.getElementById("submit-service-btn");
+        const spinner = document.getElementById("submit-spinner");
+        const btnText = document.getElementById("submit-btn-text");
+
+        if (loading) {
+          submitBtn.disabled = true;
+          spinner.classList.add("show");
+          btnText.textContent = "Adding...";
+        } else {
+          submitBtn.disabled = false;
+          spinner.classList.remove("show");
+          btnText.textContent = "Add Service";
+        }
+      }
+
+      // Add Cashier Functions
+      window.addCashier = function () {
+        const modal = document.getElementById("add-cashier-modal");
+        const form = document.getElementById("add-cashier-form");
+
+        // Reset form and clear any previous errors
+        form.reset();
+        clearCashierFormErrors();
+        hideCashierSuccessMessage();
+
+        // Show modal
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden"; // Prevent background scrolling
+
+        // Focus on first input
+        setTimeout(() => {
+          document.getElementById("cashier-username").focus();
+        }, 300);
+      };
+
+      window.closeAddCashierModal = function () {
+        const modal = document.getElementById("add-cashier-modal");
+        modal.classList.remove("active");
+        document.body.style.overflow = ""; // Re-enable background scrolling
+      };
+
+      // Close cashier modal when clicking outside
+      document
+        .getElementById("add-cashier-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeAddCashierModal();
+          }
+        });
+
+      // Close cashier modal on Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          const modal = document.getElementById("add-cashier-modal");
+          if (modal.classList.contains("active")) {
+            closeAddCashierModal();
+          }
+        }
+      });
+
+      // Cashier form submission
+      document
+        .getElementById("add-cashier-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const username = document
+            .getElementById("cashier-username")
+            .value.trim();
+          const password = document.getElementById("cashier-password").value;
+          const confirmPassword = document.getElementById(
+            "cashier-confirm-password",
+          ).value;
+
+          // Validate form
+          const errors = validateCashierForm(
+            username,
+            password,
+            confirmPassword,
+          );
+
+          if (Object.keys(errors).length > 0) {
+            showCashierFormErrors(errors);
+            return;
+          }
+
+          // Show loading state
+          setCashierButtonLoading(true);
+
+          try {
+            // Send request to API (you'll need to create this API endpoint)
+            const response = await fetch("/api/admin/users", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                username: username,
+                password: password,
+                role: "cashier",
+              }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              // Success
+              showCashierSuccessMessage("Cashier added successfully!");
+
+              // Reset form
+              document.getElementById("add-cashier-form").reset();
+              clearCashierFormErrors();
+
+              // Refresh cashier table
+              loadCashiers();
+
+              // Close modal after short delay
+              setTimeout(() => {
+                closeAddCashierModal();
+                hideCashierSuccessMessage();
+              }, 2000);
+            } else {
+              // Server error
+              showCashierFormErrors({
+                general: result.message || "Failed to add cashier",
+              });
+            }
+          } catch (error) {
+            console.error("Error adding cashier:", error);
+            showCashierFormErrors({
+              general: "Network error. Please try again.",
+            });
+          } finally {
+            setCashierButtonLoading(false);
+          }
+        });
+
+      // Real-time validation for cashier form
+      document
+        .getElementById("cashier-username")
+        .addEventListener("input", function () {
+          const username = this.value.trim();
+          const error = validateCashierUsername(username);
+          showCashierFieldError("username-error", error);
+        });
+
+      document
+        .getElementById("cashier-password")
+        .addEventListener("input", function () {
+          const password = this.value;
+          const confirmPassword = document.getElementById(
+            "cashier-confirm-password",
+          ).value;
+
+          // Only validate password matching if confirm password has content
+          let error = null;
+          if (confirmPassword) {
+            error = validateCashierPassword(password, confirmPassword);
+          } else {
+            // Only validate password format, not matching
+            error = validateCashierPasswordFormat(password);
+          }
+
+          showCashierFieldError("password-error", error);
+        });
+
+      document
+        .getElementById("cashier-confirm-password")
+        .addEventListener("input", function () {
+          const password = document.getElementById("cashier-password").value;
+          const confirmPassword = this.value;
+          const error = validateCashierPassword(password, confirmPassword);
+          showCashierFieldError("confirm-password-error", error);
+        });
+
+      // Validation functions for cashier form
+      function validateCashierForm(username, password, confirmPassword) {
+        const errors = {};
+
+        const usernameError = validateCashierUsername(username);
+        if (usernameError) errors.username = usernameError;
+
+        const passwordError = validateCashierPassword(
+          password,
+          confirmPassword,
+        );
+        if (passwordError) errors.password = passwordError;
+
+        return errors;
+      }
+
+      function validateCashierUsername(username) {
+        if (!username) return "Username is required";
+        if (username.length < 3)
+          return "Username must be at least 3 characters";
+        if (username.length > 50) return "Username cannot exceed 50 characters";
+        // Basic username format validation (letters, numbers, underscores, hyphens)
+        if (!/^[a-zA-Z0-9_-]+$/.test(username))
+          return "Username can only contain letters, numbers, underscores, and hyphens";
+        return null;
+      }
+
+      function validateCashierPassword(password, confirmPassword) {
+        if (!password) return "PIN is required";
+        if (password.length !== 4) return "PIN must be exactly 4 digits";
+        if (!/^[0-9]{4}$/.test(password))
+          return "PIN must contain only digits (0-9)";
+        if (password !== confirmPassword) return "PINs do not match";
+        return null;
+      }
+
+      // Cashier form UI helper functions
+      function showCashierFormErrors(errors) {
+        clearCashierFormErrors();
+
+        Object.keys(errors).forEach((field) => {
+          if (field !== "general") {
+            const errorElement = document.getElementById(field);
+            if (errorElement) {
+              errorElement.textContent = errors[field];
+              errorElement.classList.add("show");
+
+              const input = document.getElementById(
+                "cashier-" + field.replace("-error", ""),
+              );
+              if (input) {
+                input.classList.add("error");
+              }
+            }
+          }
+        });
+
+        if (errors.general) {
+          showCashierSuccessMessage(errors.general, true);
+        }
+      }
+
+      function clearCashierFormErrors() {
+        const errorElements = document.querySelectorAll(".error-message");
+        errorElements.forEach((el) => {
+          el.classList.remove("show");
+          el.textContent = "";
+        });
+
+        const inputs = document.querySelectorAll(".form-input, .form-textarea");
+        inputs.forEach((input) => input.classList.remove("error"));
+      }
+
+      function showCashierFieldError(elementId, error) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+          errorElement.textContent = error || "";
+          errorElement.classList.toggle("show", !!error);
+
+          const field = elementId.replace("-error", "");
+          const input = document.getElementById("cashier-" + field);
+          if (input) {
+            input.classList.toggle("error", !!error);
+          }
+        }
+      }
+
+      function showCashierSuccessMessage(message, isError = false) {
+        const successMessage = document.getElementById(
+          "cashier-success-message",
+        );
+        successMessage.textContent = message;
+        successMessage.style.backgroundColor = isError ? "#fee2e2" : "#dcfce7";
+        successMessage.style.borderColor = isError ? "#fecaca" : "#bbf7d0";
+        successMessage.style.color = isError ? "#991b1b" : "#166534";
+        successMessage.classList.add("show");
+      }
+
+      function hideCashierSuccessMessage() {
+        const successMessage = document.getElementById(
+          "cashier-success-message",
+        );
+        successMessage.classList.remove("show");
+        successMessage.textContent = "";
+      }
+
+      function setCashierButtonLoading(loading) {
+        const submitBtn = document.getElementById("submit-cashier-btn");
+        const spinner = document.getElementById("cashier-spinner");
+        const btnText = document.getElementById("cashier-btn-text");
+
+        if (loading) {
+          submitBtn.disabled = true;
+          spinner.classList.add("show");
+          btnText.textContent = "Adding...";
+        } else {
+          submitBtn.disabled = false;
+          spinner.classList.remove("show");
+          btnText.textContent = "Add Cashier";
+        }
+      }
+
+      // Load initial data (placeholder)
+      function loadInitialData() {
+        // This would typically fetch data from your API
+        document.getElementById("total-services").textContent = "Loading...";
+        document.getElementById("active-cashiers").textContent = "Loading...";
+        document.getElementById("today-income").textContent = "Loading...";
+
+        // Load sample data into tables
+        loadServices();
+        loadCashiers();
+        loadTodayIncome();
+        
+        // Load sales data for dashboard stats (today's data)
+        loadSalesData("today");
+      }
+
+      // Set Sales View and update active button style
+      window.setSalesView = function(filter, btnElement) {
+        // Reset all buttons
+        const container = document.querySelector('.sales-toggle-container');
+        if (container) {
+          const buttons = container.querySelectorAll('.btn-sm');
+          buttons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.style.background = 'white';
+            btn.style.color = 'var(--text-secondary)';
+            btn.style.border = '1px solid var(--border-color)';
+          });
+        }
+        
+        // Handle date picker visibility
+        const customDateInput = document.getElementById('sales-custom-date');
+        if (filter === 'custom') {
+          customDateInput.style.display = 'inline-block';
+        } else {
+          customDateInput.style.display = 'none';
+        }
+
+        // Set active button
+        if (btnElement) {
+          btnElement.classList.add('active');
+          btnElement.style.background = 'var(--primary-color)';
+          btnElement.style.color = 'white';
+          btnElement.style.border = 'none';
+          
+          // Map filter values to match API expectations
+          let apiFilter = filter;
+          if (filter === 'week') apiFilter = 'this_week';
+          else if (filter === 'month') apiFilter = 'this_month';
+          
+          window.currentSalesFilter = apiFilter;
+          // For custom filter, only load if date is already set; otherwise wait for date picker change
+          if (filter !== 'custom') {
+            loadSalesData(apiFilter);
+          } else {
+            const existingDate = document.getElementById('sales-custom-date').value;
+            if (existingDate) loadSalesData('custom');
+          }
+        }
+      };
+
+      // Load Sales Data
+      async function loadSalesData(dateFilter = "today") {
+        const tbody = document.getElementById("sales-table-body");
+        const totalDisplay = document.getElementById("sales-total-display");
+        const cashierFilter = document.getElementById("sales-cashier-filter");
+        
+        window.currentSalesFilter = dateFilter;
+
+        try {
+          // Show loading state
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 2rem;">
+                <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top: 3px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem;"></div>
+                Loading sales data...
+              </td>
+            </tr>
+          `;
+          totalDisplay.textContent = "Loading...";
+
+          // Build query URL
+          let url = `/api/sales?dateFilter=${dateFilter}`;
+          if (cashierFilter && cashierFilter.value) {
+            url += `&cashierId=${cashierFilter.value}`;
+          }
+
+          if (dateFilter === 'custom') {
+            const customDateInput = document.getElementById("sales-custom-date");
+            if (customDateInput && customDateInput.value) {
+              url += `&specificDate=${customDateInput.value}`;
+            }
+          }
+
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error(data.message || "Failed to fetch sales data");
+          }
+
+          if (data.data.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                  No sales data found for the selected period.
+                </td>
+              </tr>
+            `;
+            totalDisplay.textContent = "LKR 0.00";
+            updateSalesPieChart({});
+            return;
+          }
+
+          // Update total sales amount
+          const totalAmount = data.totalSalesAmount || 0;
+          totalDisplay.textContent = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'LKR',
+            minimumFractionDigits: 2
+          }).format(totalAmount);
+
+          // Build table rows and aggregate service data
+          let tableHTML = "";
+          const serviceCounts = {};
+
+          data.data.forEach((sale) => {
+            const date = new Date(sale.sale_date || sale.created_at || new Date());
+            const formattedDate = date.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+
+            // Format services list
+            let servicesList = 'N/A';
+            if (sale.services) {
+              try {
+                const parsed = typeof sale.services === "string" ? JSON.parse(sale.services) : sale.services;
+                if (Array.isArray(parsed)) {
+                  servicesList = parsed.map(s => {
+                    const sName = s.name || ("Service ID: " + s.service_id);
+                    serviceCounts[sName] = (serviceCounts[sName] || 0) + 1;
+                    return sName;
+                  }).join(', ');
+                }
+              } catch (e) {
+                console.error("Error parsing services:", e);
+              }
+            }
+
+            tableHTML += `
+              <tr>
+                <td>${formattedDate}</td>
+                <td>${escapeHtml(sale.cashier_name || 'Unknown')}</td>
+                <td>${escapeHtml(servicesList)}</td>
+                <td>LKR ${parseFloat(sale.total_amount).toFixed(2)}</td>
+                <td>${escapeHtml(sale.payment_method || 'Cash')}</td>
+              </tr>
+            `;
+          });
+
+          tbody.innerHTML = tableHTML;
+          updateSalesPieChart(serviceCounts);
+
+        } catch (error) {
+          console.error("Error loading sales data:", error);
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">
+                Error loading sales data: ${error.message}
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      // Variable to track the chart instance
+      let salesPieChartInstance = null;
+
+      function updateSalesPieChart(serviceCounts) {
+        const noDataEl = document.getElementById('no-chart-data');
+        const canvasEl = document.getElementById('servicesPieChart');
+        
+        const labels = Object.keys(serviceCounts);
+        const data = Object.values(serviceCounts);
+
+        if (labels.length === 0) {
+          noDataEl.style.display = 'block';
+          canvasEl.style.display = 'none';
+          if (salesPieChartInstance) {
+            salesPieChartInstance.destroy();
+            salesPieChartInstance = null;
+          }
+          return;
+        }
+
+        noDataEl.style.display = 'none';
+        canvasEl.style.display = 'block';
+
+        const totalServicesStr = data.reduce((a, b) => a + b, 0);
+
+        // Pre-defined vibrant colors
+        const predefinedColors = [
+          '#0091ff', '#a78bfa', '#f43f5e', '#fbbf24', '#34d399', 
+          '#60a5fa', '#f472b6', '#fb923c', '#818cf8', '#a3e635'
+        ];
+
+        // Generate dynamic colors if we have more labels than predefined colors
+        const bgColors = labels.map((_, i) => {
+          if (i < predefinedColors.length) return predefinedColors[i];
+          // Generate a vibrant HSL color for any extra items
+          const hue = (i * 137.508) % 360; // Use golden angle approximation
+          return `hsl(${hue}, 70%, 50%)`;
+        });
+
+        const chartConfig = {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: data,
+              backgroundColor: bgColors,
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 10,
+                  usePointStyle: true,
+                  font: {
+                    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+                  }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const val = context.parsed || 0;
+                    const percentage = ((val * 100) / totalServicesStr).toFixed(1) + '%';
+                    return `${label}: ${val} (${percentage})`;
+                  }
+                }
+              }
+            },
+            cutout: '70%'
+          }
+        };
+
+        if (salesPieChartInstance) {
+          salesPieChartInstance.destroy();
+        }
+
+        const ctx = canvasEl.getContext('2d');
+        salesPieChartInstance = new Chart(ctx, chartConfig);
+      }
+
+      // ===== Daily Sales Bar Chart Logic =====
+      let dailySalesBarChartInstance = null;
+
+      function updateDailySalesBarChart(dailyTotals) {
+        const noDataEl = document.getElementById('no-daily-chart-data');
+        const canvasEl = document.getElementById('dailySalesBarChart');
+        
+        const labels = Object.keys(dailyTotals);
+        const data = Object.values(dailyTotals);
+
+        if (labels.length === 0) {
+          noDataEl.style.display = 'block';
+          canvasEl.style.display = 'none';
+          if (dailySalesBarChartInstance) {
+            dailySalesBarChartInstance.destroy();
+            dailySalesBarChartInstance = null;
+          }
+          return;
+        }
+
+        noDataEl.style.display = 'none';
+        canvasEl.style.display = 'block';
+
+        const chartConfig = {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Daily Sales Total (LKR)',
+              data: data,
+              backgroundColor: 'rgba(0, 145, 255, 0.7)',
+              borderColor: 'rgba(0, 145, 255, 1)',
+              borderWidth: 1,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                ticks: {
+                  autoSkip: false,
+                  maxRotation: 45,
+                  minRotation: 45
+                }
+              },
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function(value) {
+                    return 'LKR ' + value.toLocaleString();
+                  }
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return 'Total Sales: LKR ' + context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                  }
+                }
+              }
+            }
+          }
+        };
+
+        if (dailySalesBarChartInstance) {
+          dailySalesBarChartInstance.destroy();
+        }
+
+        const ctx = canvasEl.getContext('2d');
+        dailySalesBarChartInstance = new Chart(ctx, chartConfig);
+      }
+
+      async function loadMonthlySalesChartData() {
+        try {
+          const response = await fetch("/api/sales?dateFilter=this_month");
+          const data = await response.json();
+          if (!data.success) throw new Error(data.message);
+          
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = now.getMonth();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          
+          const dailyTotals = {};
+          // Initialize all days of the current month with 0
+          for(let i = 1; i <= daysInMonth; i++) {
+            const dayDate = new Date(year, month, i);
+            const dateStr = dayDate.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+            dailyTotals[dateStr] = 0;
+          }
+          
+          data.data.forEach(sale => {
+            const saleDate = new Date(sale.sale_date || sale.created_at || new Date());
+            const dateStr = saleDate.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+            if (dailyTotals[dateStr] !== undefined) {
+              dailyTotals[dateStr] += parseFloat(sale.total_amount);
+            }
+          });
+          
+          updateDailySalesBarChart(dailyTotals);
+        } catch (error) {
+          console.error("Error loading monthly chart data:", error);
+        }
+      }
+
+      function openDailySalesModal() {
+        document.getElementById('daily-sales-modal').classList.add('active');
+        setTimeout(() => loadMonthlySalesChartData(), 50);
+      }
+
+      function closeDailySalesModal() {
+        document.getElementById('daily-sales-modal').classList.remove('active');
+      }
+
+      async function loadServices() {
+        const tbody = document.getElementById("services-table-body");
+
+        try {
+          // Show loading state
+          tbody.innerHTML = `
+                  <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem;">
+                      <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top: 3px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem;"></div>
+                      Loading services...
+                    </td>
+                  </tr>
+                `;
+
+          const response = await fetch("/api/admin/services");
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error(data.message || "Failed to fetch services");
+          }
+
+          if (data.data.length === 0) {
+            tbody.innerHTML = `
+                    <tr>
+                      <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        No services found. Add your first service using the "Add New Service" button.
+                      </td>
+                    </tr>
+                  `;
+            return;
+          }
+
+          // Build table rows
+          let tableHTML = "";
+          data.data.forEach((service) => {
+            const statusClass =
+              service.status === "active" ? "status-active" : "status-inactive";
+            const statusText =
+              service.status === "active" ? "Active" : "Inactive";
+
+            tableHTML += `
+                    <tr>
+                      <td>${service.id}</td>
+                      <td>${escapeHtml(service.service_name)}</td>
+                      <td>LKR ${parseFloat(service.price).toFixed(2)}</td>
+                      <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                      <td>
+                        <button class="btn btn-secondary" style="margin-right: 0.5rem;" onclick="editService(${service.id})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteService(${service.id})">Delete</button>
+                      </td>
+                    </tr>
+                  `;
+          });
+
+          tbody.innerHTML = tableHTML;
+
+          // Update dashboard stats
+          document.getElementById("total-services").textContent =
+            data.data.length;
+        } catch (error) {
+          console.error("Error loading services:", error);
+          tbody.innerHTML = `
+                    <tr>
+                      <td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">
+                        Error loading services: ${error.message}
+                      </td>
+                    </tr>
+                  `;
+        }
+      }
+
+      // Helper function to prevent XSS
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Edit Service Functions
+      window.editService = function (serviceId) {
+        // Show loading state
+        const modal = document.getElementById("edit-service-modal");
+        const form = document.getElementById("edit-service-form");
+
+        // Reset form and clear errors
+        form.reset();
+        clearEditFormErrors();
+        hideEditSuccessMessage();
+
+        // Show modal
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden";
+
+        // Fetch service data
+        fetch(`/api/admin/services/${serviceId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const service = data.data;
+
+              // Populate form fields
+              document.getElementById("edit-service-id").value = service.id;
+              document.getElementById("edit-service-name").value =
+                service.service_name;
+              document.getElementById("edit-service-price").value =
+                service.price;
+              document.getElementById("edit-service-description").value =
+                service.description || "";
+
+              // Focus on first input
+              setTimeout(() => {
+                document.getElementById("edit-service-name").focus();
+              }, 300);
+            } else {
+              showEditSuccessMessage(
+                data.message || "Failed to load service data",
+                true,
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading service:", error);
+            showEditSuccessMessage("Failed to load service data", true);
+          });
+      };
+
+      window.closeEditServiceModal = function () {
+        const modal = document.getElementById("edit-service-modal");
+        modal.classList.remove("active");
+        document.body.style.overflow = "";
+      };
+
+      // Close edit modal when clicking outside
+      document
+        .getElementById("edit-service-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeEditServiceModal();
+          }
+        });
+
+      // Close edit modal on Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          const modal = document.getElementById("edit-service-modal");
+          if (modal.classList.contains("active")) {
+            closeEditServiceModal();
+          }
+        }
+      });
+
+      // Edit form submission
+      document
+        .getElementById("edit-service-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const serviceId = document.getElementById("edit-service-id").value;
+          const name = document
+            .getElementById("edit-service-name")
+            .value.trim();
+          const price = document.getElementById("edit-service-price").value;
+          const description = document
+            .getElementById("edit-service-description")
+            .value.trim();
+
+          // Validate form
+          const errors = validateServiceForm(name, price, description);
+
+          if (Object.keys(errors).length > 0) {
+            showEditFormErrors(errors);
+            return;
+          }
+
+          // Show loading state
+          setEditSubmitButtonLoading(true);
+
+          try {
+            const response = await fetch(`/api/admin/services/${serviceId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: name,
+                price: parseFloat(price),
+                description: description || null,
+              }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              // Success
+              showEditSuccessMessage("Service updated successfully!");
+
+              // Reset form
+              document.getElementById("edit-service-form").reset();
+              clearEditFormErrors();
+
+              // Refresh services table
+              loadServices();
+
+              // Close modal after short delay
+              setTimeout(() => {
+                closeEditServiceModal();
+                hideEditSuccessMessage();
+              }, 2000);
+            } else {
+              // Server error
+              showEditFormErrors({
+                general: result.message || "Failed to update service",
+              });
+            }
+          } catch (error) {
+            console.error("Error updating service:", error);
+            showEditFormErrors({ general: "Network error. Please try again." });
+          } finally {
+            setEditSubmitButtonLoading(false);
+          }
+        });
+
+      // Real-time validation for edit form
+      document
+        .getElementById("edit-service-name")
+        .addEventListener("input", function () {
+          const name = this.value.trim();
+          const error = validateServiceName(name);
+          showEditFieldError("edit-name-error", error);
+        });
+
+      document
+        .getElementById("edit-service-price")
+        .addEventListener("input", function () {
+          const price = this.value;
+          const error = validateServicePrice(price);
+          showEditFieldError("edit-price-error", error);
+        });
+
+      document
+        .getElementById("edit-service-description")
+        .addEventListener("input", function () {
+          const description = this.value.trim();
+          const error = validateServiceDescription(description);
+          showEditFieldError("edit-description-error", error);
+        });
+
+      // Edit form UI helper functions
+      function showEditFormErrors(errors) {
+        clearEditFormErrors();
+
+        Object.keys(errors).forEach((field) => {
+          if (field !== "general") {
+            const errorElement = document.getElementById(field);
+            if (errorElement) {
+              errorElement.textContent = errors[field];
+              errorElement.classList.add("show");
+
+              const input = document.getElementById(
+                "edit-service-" + field.replace("-error", ""),
+              );
+              if (input) {
+                input.classList.add("error");
+              }
+            }
+          }
+        });
+
+        if (errors.general) {
+          showEditSuccessMessage(errors.general, true);
+        }
+      }
+
+      function clearEditFormErrors() {
+        const errorElements = document.querySelectorAll(".error-message");
+        errorElements.forEach((el) => {
+          el.classList.remove("show");
+          el.textContent = "";
+        });
+
+        const inputs = document.querySelectorAll(".form-input, .form-textarea");
+        inputs.forEach((input) => input.classList.remove("error"));
+      }
+
+      function showEditFieldError(elementId, error) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+          errorElement.textContent = error || "";
+          errorElement.classList.toggle("show", !!error);
+
+          const field = elementId.replace("-error", "");
+          const input = document.getElementById("edit-service-" + field);
+          if (input) {
+            input.classList.toggle("error", !!error);
+          }
+        }
+      }
+
+      function showEditSuccessMessage(message, isError = false) {
+        const successMessage = document.getElementById(
+          "edit-service-success-message",
+        );
+        successMessage.textContent = message;
+        successMessage.style.backgroundColor = isError ? "#fee2e2" : "#dcfce7";
+        successMessage.style.borderColor = isError ? "#fecaca" : "#bbf7d0";
+        successMessage.style.color = isError ? "#991b1b" : "#166534";
+        successMessage.classList.add("show");
+      }
+
+      function hideEditSuccessMessage() {
+        const successMessage = document.getElementById(
+          "edit-service-success-message",
+        );
+        successMessage.classList.remove("show");
+        successMessage.textContent = "";
+      }
+
+      function setEditSubmitButtonLoading(loading) {
+        const submitBtn = document.getElementById("submit-edit-service-btn");
+        const spinner = document.getElementById("edit-submit-spinner");
+        const btnText = document.getElementById("edit-submit-btn-text");
+
+        if (loading) {
+          submitBtn.disabled = true;
+          spinner.classList.add("show");
+          btnText.textContent = "Updating...";
+        } else {
+          submitBtn.disabled = false;
+          spinner.classList.remove("show");
+          btnText.textContent = "Update Service";
+        }
+      }
+
+      // Delete Service Function
+      window.deleteService = async function (serviceId) {
+        // Show confirmation dialog
+        if (
+          !confirm(
+            "Are you sure you want to delete this service? This action cannot be undone.",
+          )
+        ) {
+          return;
+        }
+
+        const deleteBtn = event.target;
+        const originalText = deleteBtn.textContent;
+
+        // Show loading state
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = "Deleting...";
+        deleteBtn.style.opacity = "0.7";
+
+        try {
+          // Make API call to delete service
+          const response = await fetch(`/api/admin/services/${serviceId}`, {
+            method: "DELETE",
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Success
+            showSuccessMessage("Service deleted successfully!");
+
+            // Refresh services table
+            loadServices();
+
+            // Update dashboard stats after short delay
+            setTimeout(() => {
+              loadInitialData();
+            }, 1000);
+          } else {
+            // Server error
+            const errorMessage = result.message || "Failed to delete service";
+            showSuccessMessage(errorMessage, true);
+          }
+        } catch (error) {
+          console.error("Error deleting service:", error);
+          showSuccessMessage("Network error. Please try again.", true);
+        } finally {
+          // Reset button state
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = originalText;
+          deleteBtn.style.opacity = "1";
+        }
+      };
+
+      // Delete Cashier Function
+      window.deleteCashier = async function (event, cashierId) {
+        // Show confirmation dialog
+        if (
+          !confirm(
+            "Are you sure you want to delete this cashier? This action cannot be undone.",
+          )
+        ) {
+          return;
+        }
+
+        const deleteBtn = event.target;
+        const originalText = deleteBtn.textContent;
+
+        // Show loading state
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = "Deleting...";
+        deleteBtn.style.opacity = "0.7";
+
+        try {
+          // Make API call to delete cashier
+          const response = await fetch(`/api/admin/users/${cashierId}`, {
+            method: "DELETE",
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Success
+            showSuccessMessage("Cashier deleted successfully!");
+
+            // Refresh cashiers table
+            loadCashiers();
+
+            // Update dashboard stats after short delay
+            setTimeout(() => {
+              loadInitialData();
+            }, 1000);
+          } else {
+            // Server error
+            const errorMessage = result.message || "Failed to delete cashier";
+            showSuccessMessage(errorMessage, true);
+          }
+        } catch (error) {
+          console.error("Error deleting cashier:", error);
+          showSuccessMessage("Network error. Please try again.", true);
+        } finally {
+          // Reset button state
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = originalText;
+          deleteBtn.style.opacity = "1";
+        }
+      };
+
+      async function loadCashiers() {
+        const tbody = document.getElementById("cashiers-table-body");
+
+        try {
+          // Show loading state
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="3" style="text-align: center; padding: 2rem;">
+                <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top: 3px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem;"></div>
+                Loading cashiers...
+              </td>
+            </tr>
+          `;
+
+          const response = await fetch("/api/admin/users");
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error(data.message || "Failed to fetch cashiers");
+          }
+
+          if (data.data.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="3" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                  No cashiers found. Add your first cashier using the "Add New Cashier" button.
+                </td>
+              </tr>
+            `;
+            
+            // Clear cashier filter options
+            const cashierFilter = document.getElementById("sales-cashier-filter");
+            if (cashierFilter) {
+              cashierFilter.innerHTML = '<option value="">All Cashiers</option>';
+            }
+            return;
+          }
+
+          // Update cashier filter dropdown for sales view
+          const cashierFilter = document.getElementById("sales-cashier-filter");
+          if (cashierFilter) {
+            // Preserve selected value
+            const currentValue = cashierFilter.value;
+            
+            // Rebuild options
+            let optionsHTML = '<option value="">All Cashiers</option>';
+            data.data.forEach(cashier => {
+              optionsHTML += `<option value="${cashier.id}">${escapeHtml(cashier.username)}</option>`;
+            });
+            cashierFilter.innerHTML = optionsHTML;
+            
+            // Restore selection if it still exists
+            if (currentValue) {
+              cashierFilter.value = currentValue;
+            }
+          }
+
+          // Build table rows
+          let tableHTML = "";
+          data.data.forEach((cashier) => {
+            const statusClass =
+              cashier.status === "active" ? "status-active" : "status-inactive";
+            const statusText =
+              cashier.status === "active" ? "Active" : "Inactive";
+
+            tableHTML += `
+              <tr>
+                <td>${escapeHtml(cashier.username)}</td>
+                <td>
+                  <button class="btn btn-danger" onclick="deleteCashier(event, ${cashier.id})">Delete</button>
+                </td>
+              </tr>
+            `;
+          });
+
+          tbody.innerHTML = tableHTML;
+
+          // Update dashboard stats
+          document.getElementById("active-cashiers").textContent =
+            data.data.filter((c) => c.status === "active").length;
+        } catch (error) {
+          console.error("Error loading cashiers:", error);
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="3" style="text-align: center; padding: 2rem; color: #ef4444;">
+                Error loading cashiers: ${error.message}
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      // Count-up animation function
+      function animateCountUp(element, targetValue, duration = 2000) {
+        const start = 0;
+        const startTime = performance.now();
+        
+        function easeOutCubic(t) {
+          return 1 - Math.pow(1 - t, 3);
+        }
+        
+        function updateCount(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const easedProgress = easeOutCubic(progress);
+          const currentValue = start + (targetValue - start) * easedProgress;
+          
+          // Format the current value
+          const formattedValue = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'LKR',
+            minimumFractionDigits: 2
+          }).format(currentValue);
+          
+          element.textContent = formattedValue;
+          
+          if (progress < 1) {
+            requestAnimationFrame(updateCount);
+          } else {
+            // Ensure exact final value
+            element.textContent = new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'LKR',
+              minimumFractionDigits: 2
+            }).format(targetValue);
+          }
+        }
+        
+        requestAnimationFrame(updateCount);
+      }
+
+      // Load Today's Income
+      async function loadTodayIncome() {
+        const incomeElement = document.getElementById("today-income");
+
+        try {
+          // Show loading state
+          incomeElement.textContent = "Loading...";
+          incomeElement.style.color = "#64748b";
+
+          // Fetch today's income from API
+          const response = await fetch("/api/sales?dateFilter=today");
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error(data.message || "Failed to fetch today's income");
+          }
+
+          // Handle the total amount properly
+          const totalAmount = data.totalSalesAmount || 0;
+          
+          // Apply count-up animation
+          incomeElement.style.color = "#1e293b";
+          animateCountUp(incomeElement, totalAmount, 2000);
+
+          console.log("Today's income loaded successfully:", totalAmount);
+        } catch (error) {
+          console.error("Error loading today's income:", error);
+          incomeElement.textContent = "Error";
+          incomeElement.style.color = "#ef4444";
+          incomeElement.title = "Error loading income data: " + error.message;
+        }
+      }
+
+      // Initialize dashboard
+      document.addEventListener("DOMContentLoaded", loadInitialData);
+    </script>
+  </body>
+</html>

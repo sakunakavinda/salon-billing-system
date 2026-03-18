@@ -1,0 +1,2929 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cashier Dashboard</title>
+    <style>
+      :root {
+        --primary-color: #0091ff;
+        --secondary-color: #a78bfa;
+        --primary-gradient: linear-gradient(135deg, #0091ff 0%, #a78bfa 100%);
+        --primary-hover: #0077d9;
+        --background-color: #f8fafc;
+        --card-background: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --danger-secondary :rgb(139, 0, 0);
+        --warning-color: #f59e0b;
+        --accent-color: #06b6d4;
+        --shadow: 0 4px 6px -1px rgb(103, 0, 0), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        --transition-fast: 0.15s ease;
+        --transition-normal: 0.3s ease;
+        --transition-slow: 0.5s ease;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 1rem;
+        line-height: 1.6;
+      }
+
+      /* Header Styles - Matching index.html */
+      .simple-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border-radius: 16px;
+        color: white;
+        
+        position: relative;
+        overflow: hidden;
+
+        /* Animated gradient background */
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color),
+          var(--primary-color)
+        );
+        background-size: 200% 200%;
+        animation: gradientMove 5s ease infinite;
+      }
+
+      /* Define the gradient movement animation */
+      @keyframes gradientMove {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .simple-header h1 {
+        word-spacing: 5px;
+        font-size: 3rem;
+        font-weight: 500;
+        margin-bottom: 0.1rem;
+        letter-spacing: -0.005em;
+        background: linear-gradient(135deg, rgb(173, 32, 255), rgb(0, 10, 119));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+      }
+
+      .logout-btn {
+        background: linear-gradient(
+          135deg,
+          var(--danger-color),
+          var(--danger-secondary)
+        );
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.875rem;
+      }
+
+      .logout-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .logout-btn:active {
+        transform: scale(1);
+      }
+
+      /* Responsive adjustments for header */
+      @media (max-width: 768px) {
+        .simple-header {
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .header-content {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .simple-header h1 {
+          font-size: 3.5rem;
+          word-spacing: 15px;
+        }
+
+        .logout-btn {
+          padding: 0.625rem 1.25rem;
+          font-size: 0.8125rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .simple-header {
+          padding: 1.25rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .simple-header h1 {
+          font-size: 3rem;
+          word-spacing: 10px;
+        }
+
+        .logout-btn {
+          padding: 0.5rem 1rem;
+          font-size: 0.75rem;
+        }
+      }
+
+      /* Main Content */
+      .dashboard-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100vw;
+        max-width: none;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .dashboard-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 1rem;
+      }
+
+      /* Single-column layout (stacked vertically on all screen sizes) */
+      .dashboard-main {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+
+      /* Add New Sale Card - Simplified to match index.html style */
+      .add-sale-card {
+        background: var(--card-background);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: var(--accent-color);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .add-sale-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--primary-color);
+      }
+
+      /* Sales History Card */
+      .sales-history-card {
+        background: #f8fafc;
+        padding: 2rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      /* Sales Summary Card */
+      .sales-summary-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .summary-item {
+        text-align: center;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid transparent;
+      }
+
+      .summary-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: #f1f5f9;
+        border-color: var(--border-color);
+      }
+
+      .summary-item .total-label {
+        font-size: 0.85rem;
+        color: black;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+      }
+
+      .summary-item .total-sales-amount,
+      .summary-item #transaction-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        line-height: 1.2;
+      }
+
+      .summary-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+      }
+
+      /* Mobile-optimized summary cards */
+      @media (max-width: 768px) {
+        .sales-summary-card {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+          padding: 1rem;
+        }
+
+        .summary-item {
+          padding: 0.875rem;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          background: #f8fafc;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8rem;
+          margin-bottom: 0.25rem;
+          text-transform: none;
+          letter-spacing: 0;
+          color: black;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.25rem;
+          text-align: right;
+        }
+
+        .summary-item:hover {
+          transform: none;
+          background: #f1f5f9;
+        }
+      }
+
+      /* Tablet optimization for summary cards */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .sales-summary-card {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.75rem;
+          padding: 1.25rem;
+        }
+
+        .summary-item {
+          padding: 0.875rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8rem;
+          margin-bottom: 0.375rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.25rem;
+        }
+      }
+
+      /* Desktop optimization for summary cards */
+      @media (min-width: 1025px) {
+        .sales-summary-card {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+          padding: 1.5rem;
+        }
+
+        .summary-item {
+          padding: 1rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.85rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.5rem;
+        }
+      }
+
+      /* Ultra-small screen optimization for summary cards */
+      @media (max-width: 375px) {
+        .sales-summary-card {
+          padding: 0.75rem;
+          gap: 0.5rem;
+        }
+
+        .summary-item {
+          padding: 0.75rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.75rem;
+          margin-bottom: 0.2rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.1rem;
+        }
+      }
+
+      /* Small phone optimization for summary cards */
+      @media (min-width: 376px) and (max-width: 480px) {
+        .sales-summary-card {
+          padding: 0.875rem;
+          gap: 0.625rem;
+        }
+
+        .summary-item {
+          padding: 0.8125rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.78125rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.15rem;
+        }
+      }
+
+      /* Medium small phone optimization for summary cards */
+      @media (min-width: 481px) and (max-width: 560px) {
+        .sales-summary-card {
+          padding: 0.9375rem;
+          gap: 0.75rem;
+        }
+
+        .summary-item {
+          padding: 0.875rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8125rem;
+          margin-bottom: 0.3rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.2rem;
+        }
+      }
+
+      /* Search Section */
+      .search-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        min-width: 200px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        background: white;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      }
+
+      .search-input::placeholder {
+        color: #94a3b8;
+      }
+
+
+      /* Search and Clear Buttons */
+      .search-btn,
+      .clear-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        font-size: 1rem;
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+
+      .search-btn {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .search-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .clear-btn {
+        background: #94a3b8;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .clear-btn:hover {
+        background: #64748b;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .clear-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+
+      /* Sales Table - Minimal and Clean */
+      .table-container {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        background: white;
+      }
+
+      .sales-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .sales-table th,
+      .sales-table td {
+        padding: 8px;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+        vertical-align: top;
+        color: #1e293b; /* Changed from white to black */
+      }
+
+      .sales-table th {
+        background: #f8fafc;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #64748b;
+      }
+
+      .sales-table tr:hover {
+        background-color: #f8fafc;
+      }
+
+      .sale-amount {
+        font-weight: bold;
+        color: #1e293b;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .services-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .service-tag {
+        background: #e2e8f0;
+        color: #1e293b;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      /* Basic responsive behavior */
+      @media (max-width: 768px) {
+        .sales-table {
+          font-size: 3px;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 6px;
+        }
+
+        .service-tag {
+          font-size: 10px;
+          padding: 1px 4px;
+        }
+      }
+
+      /* Messages */
+      .message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .message.success {
+        background-color: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+
+      .message.error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      .message.warning {
+        background-color: #fff7ed;
+        color: #9a3412;
+        border: 1px solid #fed7aa;
+      }
+
+      /* Success Message Container */
+      .success-message-container {
+        margin-top: 1rem;
+        text-align: center;
+        min-height: 2rem;
+      }
+
+      .success-message {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        font-weight: 600;
+        animation: fadeInOut 2s ease-in-out;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+
+        10% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        90% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        100% {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+      }
+
+      /* Responsive Design - Mobile First Approach */
+      
+      /* Base styles for mobile (default) */
+      body {
+        padding: 1rem;
+      }
+
+      .container {
+        max-width: 100%;
+        padding: 0 1rem;
+      }
+
+      .dashboard-header {
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .welcome-text h1 {
+        font-size: 1.375rem;
+      }
+
+      .welcome-text p {
+        font-size: 0.9375rem;
+      }
+
+      .dashboard-content {
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .dashboard-title {
+        font-size: 1.125rem;
+        margin-bottom: 0.875rem;
+      }
+
+      .dashboard-main {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      .add-sale-card,
+      .sales-history-card {
+        padding: 1.25rem;
+      }
+
+      .card-title {
+        font-size: 1rem;
+        margin-bottom: 0.875rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        background: white;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      }
+
+      .form-control::placeholder {
+        color: #94a3b8;
+      }
+
+      .form-control.error {
+        border-color: #ef4444;
+      }
+
+      .form-control.success {
+        border-color: #10b981;
+      }
+
+      .services-container {
+        max-height: 220px;
+        padding: 0.625rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background: white;
+        overflow-y: auto;
+      }
+
+      .loading-services {
+        text-align: center;
+        color: var(--text-secondary);
+        padding: 0.875rem;
+        font-style: italic;
+      }
+
+      .services-section {
+        margin-top: 1rem;
+      }
+
+      .services-header {
+        margin-bottom: 0.625rem;
+      }
+
+      .services-header label {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .service-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+
+
+      .service-item:last-child {
+        border-bottom: none;
+      }
+
+      .service-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--primary-color);
+      }
+
+      .service-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+      }
+
+      .service-name {
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: black;
+      }
+
+      .service-price {
+        font-size: 0.8125rem;
+        color: black;
+        font-weight: 600;
+      }
+
+      .total-section {
+        padding: 1rem;
+        margin-top: 1rem;
+      }
+
+      .total-row {
+        margin-bottom: 0.625rem;
+      }
+
+      .total-label,
+      .total-amount {
+        font-size: 1.125rem;
+        color: #000;
+      }
+
+      .submit-section {
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+
+      .submit-btn,
+      .reset-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        font-size: 1rem;
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+
+      .submit-btn {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .submit-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .submit-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .reset-btn {
+        background: #94a3b8;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .reset-btn:hover {
+        background: #64748b;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .reset-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .sales-summary-card {
+        padding: 1rem;
+        gap: 0.625rem;
+      }
+
+      .summary-item {
+        padding: 0.75rem;
+      }
+
+      .summary-item .total-sales-amount,
+      .summary-item #transaction-count {
+        font-size: 1.125rem;
+      }
+
+      .search-container {
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+
+      .search-input {
+        font-size: 0.9375rem;
+        padding: 0.75rem;
+        min-height: 40px;
+      }
+
+      #date-filter {
+        width: 100%;
+        font-size: 0.9375rem;
+        padding: 0.75rem;
+        min-height: 40px;
+      }
+
+      .sales-table {
+        font-size: 0.8125rem;
+      }
+
+      .sales-table th,
+      .sales-table td {
+        padding: 0.625rem 0.375rem;
+      }
+
+      /* Tablet styles (768px and up) */
+      @media (min-width: 768px) {
+        body {
+          padding: 1.25rem;
+        }
+
+        .container {
+          padding: 0 1.25rem;
+        }
+
+        .dashboard-header {
+          padding: 1.75rem;
+          margin-bottom: 1.75rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 1.875rem;
+        }
+
+        .welcome-text p {
+          font-size: 1.0625rem;
+        }
+
+        .dashboard-content {
+          padding: 1.75rem;
+          margin-bottom: 1.75rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.375rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .dashboard-main {
+          grid-template-columns: 1fr;
+          gap: 1.75rem;
+        }
+
+        .add-sale-card,
+        .sales-history-card {
+          padding: 1.75rem;
+        }
+
+        .card-title {
+          font-size: 1.125rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .form-group {
+          margin-bottom: 1.25rem;
+        }
+
+        .form-control {
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+        }
+
+        .services-container {
+          max-height: 200px;
+          padding: 0.875rem;
+        }
+
+        .service-item {
+          padding: 0.6875rem;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 17px;
+          height: 17px;
+        }
+
+        .total-section {
+          padding: 1.25rem;
+          margin-top: 1rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.5rem;
+        }
+
+        .total-amount {
+          font-size: 1.375rem;
+        }
+
+        .submit-section {
+          flex-direction: row;
+          gap: 0.875rem;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 0.875rem 1.75rem;
+          font-size: 1.0625rem;
+        }
+
+        .sales-summary-card {
+          padding: 1.25rem;
+          gap: 0.875rem;
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .summary-item {
+          padding: 0.875rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.375rem;
+        }
+
+        .search-container {
+          flex-direction: row;
+          gap: 0.875rem;
+        }
+
+        .search-input {
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+        }
+
+        #date-filter {
+          width: 200px;
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+        }
+
+        .sales-table {
+          font-size: 0.875rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 0.875rem;
+        }
+      }
+
+      /* Desktop styles (1024px and up) */
+      @media (min-width: 1024px) {
+        body {
+          padding: 2rem;
+        }
+
+        .container {
+          max-width: 1200px;
+          padding: 0 2rem;
+        }
+
+        .dashboard-header {
+          padding: 2.5rem;
+          margin-bottom: 2.5rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 2.5rem;
+        }
+
+        .dashboard-content {
+          padding: 2.5rem;
+          margin-bottom: 2.5rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.75rem;
+          margin-bottom: 2rem;
+        }
+
+        .dashboard-main {
+          gap: 2.5rem;
+        }
+
+        .add-sale-card,
+        .sales-history-card {
+          padding: 1.5rem; /* Reduced padding for compact layout */
+        }
+
+        .card-title {
+          font-size: 1.3rem; /* Slightly smaller */
+          margin-bottom: 1.5rem; /* Reduced margin */
+        }
+
+        /* Desktop form layout - side by side */
+        .form-layout {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem; /* Reduced gap */
+          align-items: start;
+        }
+
+        .form-section {
+          /* Takes up left column */
+        }
+
+        .services-section {
+          /* Takes up right column */
+          height: 320px; /* Reduced height */
+          display: flex;
+          flex-direction: column;
+        }
+
+        .services-container {
+          flex: 1;
+          max-height: none; /* Remove max-height constraint */
+          overflow-y: auto;
+        }
+
+        .services-header {
+          margin-bottom: 0.75rem; /* Reduced margin */
+          border-bottom: 2px solid var(--border-color);
+          padding-bottom: 0.25rem; /* Reduced padding */
+        }
+
+        .form-group {
+          margin-bottom: 1.5rem; /* Reduced margin */
+        }
+
+        .form-control {
+          font-size: 1rem; /* Slightly smaller */
+          padding: 0.875rem; /* Reduced padding */
+        }
+
+        .services-container {
+          max-height: 300px;
+          padding: 1rem; /* Reduced padding */
+        }
+
+        .service-item {
+          padding: 0.75rem; /* Reduced padding */
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 18px; /* Slightly smaller */
+          height: 18px;
+        }
+
+        .total-section {
+          padding: 1.5rem; /* Reduced padding */
+          margin-top: 1.5rem; /* Reduced margin */
+          grid-column: 1 / -1; /* Span both columns */
+        }
+
+        .total-amount {
+          font-size: 1.3rem; /* Slightly smaller */
+        }
+
+        .submit-section {
+          grid-column: 1 / -1; /* Span both columns */
+          margin-top: 0.75rem; /* Reduced margin */
+          gap: 0.75rem; /* Reduced gap */
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 1rem 2rem; /* Reduced padding */
+          font-size: 1.1rem; /* Slightly smaller */
+        }
+
+        .sales-summary-card {
+          padding: 2rem;
+          gap: 1.5rem;
+        }
+
+        .summary-item {
+          padding: 1.5rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.75rem;
+        }
+
+        .search-input {
+          font-size: 1.125rem;
+          padding: 1rem;
+        }
+
+        #date-filter {
+          width: 250px;
+          font-size: 1.125rem;
+          padding: 1rem;
+        }
+
+        .sales-table {
+          font-size: 1rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 1.25rem;
+        }
+      }
+
+      /* Extra Small phone optimization (320px - 375px) */
+      @media (max-width: 375px) {
+        body {
+          padding: 0.5rem;
+        }
+
+        .container {
+          padding: 0 0.5rem;
+        }
+
+        .dashboard-header {
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 1.125rem;
+          line-height: 1.2;
+        }
+
+        .welcome-text p {
+          font-size: 0.875rem;
+          line-height: 1.4;
+        }
+
+        .dashboard-content {
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .dashboard-title {
+          font-size: 1rem;
+          margin-bottom: 0.625rem;
+        }
+
+        .add-sale-card,
+        .sales-history-card {
+          padding: 1rem;
+        }
+
+        .card-title {
+          font-size: 0.95rem;
+          margin-bottom: 0.625rem;
+        }
+
+        .form-group {
+          margin-bottom: 0.875rem;
+        }
+
+        .form-control {
+          font-size: 0.9rem;
+          padding: 0.625rem;
+          min-height: 38px;
+        }
+
+        .services-container {
+          max-height: 180px;
+          padding: 0.5rem;
+        }
+
+        .service-item {
+          padding: 0.625rem;
+          min-height: 42px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 16px;
+          height: 16px;
+          margin-right: 10px;
+        }
+
+        .service-info {
+          gap: 8px;
+        }
+
+        .service-name {
+          font-size: 0.875rem;
+        }
+
+        .service-price {
+          font-size: 0.875rem;
+        }
+
+        .total-section {
+          padding: 0.875rem;
+          margin-top: 0.875rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.5rem;
+        }
+
+        .total-label {
+          font-size: 0.85rem;
+        }
+
+        .total-amount {
+          font-size: 1rem;
+        }
+
+        .submit-section {
+          gap: 8px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 0.75rem;
+          font-size: 0.95rem;
+          min-height: 38px;
+        }
+
+        .sales-summary-card {
+          padding: 0.875rem;
+          gap: 0.375rem;
+        }
+
+        .summary-item {
+          padding: 0.625rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8rem;
+        }
+
+        .search-container {
+          gap: 8px;
+        }
+
+        .search-input {
+          font-size: 0.9rem;
+          padding: 0.625rem;
+          min-height: 38px;
+        }
+
+        #date-filter {
+          width: 100%;
+          font-size: 0.9rem;
+          padding: 0.625rem;
+          min-height: 38px;
+        }
+
+        .sales-table {
+          font-size: 0.75rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 0.5rem 0.25rem;
+        }
+
+        .service-tag {
+          font-size: 0.75rem;
+          padding: 0.2rem 0.4rem;
+        }
+      }
+
+      /* Small phone optimization (376px - 480px) */
+      @media (min-width: 376px) and (max-width: 480px) {
+        body {
+          padding: 0.625rem;
+        }
+
+        .container {
+          padding: 0 0.625rem;
+        }
+
+        .dashboard-header {
+          padding: 1.125rem;
+          margin-bottom: 1.125rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 1.1875rem;
+        }
+
+        .welcome-text p {
+          font-size: 0.875rem;
+        }
+
+        .dashboard-content {
+          padding: 1.125rem;
+          margin-bottom: 1.125rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.0625rem;
+          margin-bottom: 0.6875rem;
+        }
+
+        .add-sale-card,
+        .sales-history-card {
+          padding: 1.125rem;
+        }
+
+        .card-title {
+          font-size: 0.96875rem;
+          margin-bottom: 0.6875rem;
+        }
+
+        .form-group {
+          margin-bottom: 0.9375rem;
+        }
+
+        .form-control {
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+          min-height: 39px;
+        }
+
+        .services-container {
+          max-height: 190px;
+          padding: 0.5625rem;
+        }
+
+        .service-item {
+          padding: 0.6875rem;
+          min-height: 43px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 17px;
+          height: 17px;
+          margin-right: 11px;
+        }
+
+        .service-info {
+          gap: 9px;
+        }
+
+        .service-name {
+          font-size: 0.875rem;
+        }
+
+        .service-price {
+          font-size: 0.875rem;
+        }
+
+        .total-section {
+          padding: 0.9375rem;
+          margin-top: 0.9375rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.5625rem;
+        }
+
+        .total-label {
+          font-size: 0.84375rem;
+        }
+
+        .total-amount {
+          font-size: 1.03125rem;
+        }
+
+        .submit-section {
+          gap: 9px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 0.8125rem;
+          font-size: 0.96875rem;
+          min-height: 39px;
+        }
+
+        .sales-summary-card {
+          padding: 0.9375rem;
+          gap: 0.4375rem;
+        }
+
+        .summary-item {
+          padding: 0.6875rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.03125rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.8125rem;
+        }
+
+        .search-container {
+          gap: 9px;
+        }
+
+        .search-input {
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+          min-height: 39px;
+        }
+
+        #date-filter {
+          width: 100%;
+          font-size: 0.9375rem;
+          padding: 0.6875rem;
+          min-height: 39px;
+        }
+
+        .sales-table {
+          font-size: 0.78125rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 0.5625rem 0.28125rem;
+        }
+
+        .service-tag {
+          font-size: 0.78125rem;
+          padding: 0.21875rem 0.4375rem;
+        }
+      }
+
+      /* Medium small phone optimization (481px - 560px) */
+      @media (min-width: 481px) and (max-width: 560px) {
+        body {
+          padding: 0.75rem;
+        }
+
+        .container {
+          padding: 0 0.75rem;
+        }
+
+        .dashboard-header {
+          padding: 1.25rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .welcome-text h1 {
+          font-size: 1.25rem;
+        }
+
+        .welcome-text p {
+          font-size: 0.9rem;
+        }
+
+        .dashboard-content {
+          padding: 1.25rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .dashboard-title {
+          font-size: 1.1rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .add-sale-card,
+        .sales-history-card {
+          padding: 1.25rem;
+        }
+
+        .card-title {
+          font-size: 1rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-control {
+          font-size: 0.95rem;
+          padding: 0.75rem;
+          min-height: 40px;
+        }
+
+        .services-container {
+          max-height: 200px;
+          padding: 0.625rem;
+        }
+
+        .service-item {
+          padding: 0.75rem;
+          min-height: 44px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin-right: 12px;
+        }
+
+        .service-info {
+          gap: 10px;
+        }
+
+        .service-name {
+          font-size: 0.9rem;
+        }
+
+        .service-price {
+          font-size: 0.9rem;
+        }
+
+        .total-section {
+          padding: 1rem;
+          margin-top: 1rem;
+        }
+
+        .total-row {
+          margin-bottom: 0.625rem;
+        }
+
+        .total-label {
+          font-size: 0.875rem;
+        }
+
+        .total-amount {
+          font-size: 1.1rem;
+        }
+
+        .submit-section {
+          gap: 10px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 0.875rem;
+          font-size: 1rem;
+          min-height: 40px;
+        }
+
+        .sales-summary-card {
+          padding: 1rem;
+          gap: 0.5rem;
+        }
+
+        .summary-item {
+          padding: 0.75rem;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 1.1rem;
+        }
+
+        .summary-item .total-label {
+          font-size: 0.85rem;
+        }
+
+        .search-container {
+          gap: 10px;
+        }
+
+        .search-input {
+          font-size: 0.95rem;
+          padding: 0.75rem;
+          min-height: 40px;
+        }
+
+        #date-filter {
+          width: 100%;
+          font-size: 0.95rem;
+          padding: 0.75rem;
+          min-height: 40px;
+        }
+
+        .sales-table {
+          font-size: 0.8rem;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 0.625rem 0.375rem;
+        }
+
+        .service-tag {
+          font-size: 0.8rem;
+          padding: 0.25rem 0.5rem;
+        }
+      }
+
+      /* Touch-friendly enhancements */
+      .service-item,
+      .submit-btn,
+      .reset-btn,
+      .logout-btn {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+        touch-action: manipulation;
+      }
+
+      /* Improved focus states for accessibility */
+      .form-control:focus,
+      .search-input:focus,
+      #date-filter:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+
+      /* Better mobile scrolling for long lists */
+      .services-container {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Prevent zoom on iOS when focusing form inputs */
+      .form-control,
+      .search-input,
+      #date-filter {
+        font-size: 16px;
+      }
+
+      /* Enhanced mobile touch targets */
+      .service-item {
+        min-height: 48px;
+        padding: 12px 16px;
+      }
+
+      .service-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+      }
+
+      .submit-btn,
+      .reset-btn {
+        min-height: 44px;
+        padding: 12px 24px;
+      }
+
+      .logout-btn {
+        min-height: 44px;
+        padding: 12px 24px;
+      }
+
+      /* Granular Typography Scaling */
+      
+      /* Base typography scaling for mobile */
+      :root {
+        --heading-scale: 1;
+        --body-scale: 1;
+        --small-scale: 1;
+      }
+
+      /* Typography scaling for different screen sizes */
+      @media (max-width: 375px) {
+        :root {
+          --heading-scale: 0.9;
+          --body-scale: 0.95;
+          --small-scale: 0.9;
+        }
+      }
+
+      @media (min-width: 376px) and (max-width: 480px) {
+        :root {
+          --heading-scale: 0.92;
+          --body-scale: 0.96;
+          --small-scale: 0.92;
+        }
+      }
+
+      @media (min-width: 481px) and (max-width: 560px) {
+        :root {
+          --heading-scale: 0.94;
+          --body-scale: 0.98;
+          --small-scale: 0.94;
+        }
+      }
+
+      @media (min-width: 561px) and (max-width: 768px) {
+        :root {
+          --heading-scale: 0.96;
+          --body-scale: 0.99;
+          --small-scale: 0.96;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1024px) {
+        :root {
+          --heading-scale: 1;
+          --body-scale: 1;
+          --small-scale: 1;
+        }
+      }
+
+      @media (min-width: 1025px) {
+        :root {
+          --heading-scale: 1.05;
+          --body-scale: 1.02;
+          --small-scale: 1.02;
+        }
+      }
+
+      /* Apply typography scaling to headings */
+      .welcome-text h1 {
+        font-size: calc(2rem * var(--heading-scale));
+      }
+
+      .dashboard-title {
+        font-size: calc(1.5rem * var(--heading-scale));
+      }
+
+      .card-title {
+        font-size: calc(1.25rem * var(--heading-scale));
+      }
+
+      /* Apply typography scaling to body text */
+      .welcome-text p {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      .form-group label {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .form-control {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .service-name {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .service-price {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .total-label {
+        font-size: calc(0.875rem * var(--body-scale));
+      }
+
+      .total-amount {
+        font-size: calc(1.5rem * var(--heading-scale));
+      }
+
+      .submit-btn,
+      .reset-btn {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      /* Apply typography scaling to small text */
+      .summary-item .total-label {
+        font-size: calc(0.85rem * var(--small-scale));
+      }
+
+      .summary-item .total-sales-amount,
+      .summary-item #transaction-count {
+        font-size: calc(1.5rem * var(--heading-scale));
+      }
+
+      .current-date-range {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      .search-input {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .sales-table th {
+        font-size: calc(0.9rem * var(--small-scale));
+      }
+
+      .sales-table td {
+        font-size: calc(0.95rem * var(--small-scale));
+      }
+
+      .sale-amount {
+        font-size: calc(1.1rem * var(--body-scale));
+      }
+
+      .service-tag {
+        font-size: calc(0.8rem * var(--small-scale));
+      }
+
+      .message {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      .success-message {
+        font-size: calc(1rem * var(--body-scale));
+      }
+
+      /* Mobile-specific optimizations */
+      @media (max-width: 768px) {
+        /* Increase form field sizes for mobile */
+        .form-control {
+          min-height: 44px;
+          padding: 12px 16px;
+          font-size: 16px;
+        }
+
+        /* Better spacing for mobile forms */
+        .form-group {
+          margin-bottom: 16px;
+        }
+
+        /* Larger service items for touch */
+        .service-item {
+          min-height: 52px;
+          padding: 14px 16px;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 22px;
+          height: 22px;
+        }
+
+        /* Mobile-friendly submit buttons */
+        .submit-section {
+          gap: 12px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          min-height: 48px;
+          padding: 14px 24px;
+        }
+
+        /* Better mobile table scrolling */
+        .table-container {
+          border-radius: 8px;
+          border: 1px solid var(--border-color);
+          margin-bottom: 16px;
+        }
+
+        .sales-table th,
+        .sales-table td {
+          padding: 12px 8px;
+          font-size: 14px;
+        }
+
+        /* Mobile search improvements */
+        .search-container {
+          gap: 12px;
+        }
+
+        .search-input {
+          min-height: 44px;
+          padding: 12px 16px;
+          font-size: 16px;
+        }
+
+        #date-filter {
+          min-height: 44px;
+          padding: 12px 16px;
+          font-size: 16px;
+        }
+
+        /* Mobile summary cards */
+        .sales-summary-card {
+          gap: 12px;
+        }
+
+        .summary-item {
+          padding: 12px;
+        }
+
+        .summary-item .total-sales-amount,
+        .summary-item #transaction-count {
+          font-size: 18px;
+        }
+      }
+
+      /* Loading Animation */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive Behavior Testing & Optimization */
+      
+      /* Screen size indicators for testing (can be removed in production) */
+      .screen-indicator {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: monospace;
+        z-index: 9999;
+        display: none;
+      }
+
+      /* Show screen size indicator on very small screens for testing */
+      @media (max-width: 480px) {
+        .screen-indicator {
+          display: block;
+        }
+      }
+
+      /* Responsive container optimization */
+      .add-sale-card {
+        /* Ensure proper shrinking behavior */
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* Enhanced mobile form layout */
+      @media (max-width: 480px) {
+        .add-sale-card {
+          /* Force smaller padding on very small screens */
+          padding: 1rem !important;
+          margin-bottom: 1rem;
+        }
+
+        .card-title {
+          font-size: 1rem !important;
+          margin-bottom: 0.75rem !important;
+        }
+
+        .form-group {
+          margin-bottom: 1rem !important;
+        }
+
+        .form-control {
+          font-size: 16px !important;
+          padding: 12px !important;
+          min-height: 44px !important;
+        }
+
+        .services-container {
+          padding: 8px !important;
+          max-height: 180px !important;
+        }
+
+        .service-item {
+          padding: 10px !important;
+          min-height: 44px !important;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 18px !important;
+          height: 18px !important;
+        }
+
+        .total-section {
+          padding: 10px !important;
+          margin-top: 10px !important;
+        }
+
+        .total-amount {
+          font-size: 1.1rem !important;
+        }
+
+        .submit-section {
+          gap: 8px !important;
+          margin-top: 1rem !important;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 10px !important;
+          font-size: 14px !important;
+          min-height: 40px !important;
+        }
+
+        /* Ensure form elements don't overflow */
+        .form-control,
+        .search-input,
+        #date-filter {
+          max-width: 100%;
+          box-sizing: border-box;
+        }
+      }
+
+      /* Ultra-small screen optimization (320px and below) */
+      @media (max-width: 320px) {
+        .add-sale-card {
+          padding: 0.75rem !important;
+        }
+
+        .card-title {
+          font-size: 0.9rem !important;
+          margin-bottom: 0.6rem !important;
+        }
+
+        .form-group {
+          margin-bottom: 0.8rem !important;
+        }
+
+        .form-control {
+          font-size: 14px !important;
+          padding: 10px !important;
+          min-height: 40px !important;
+        }
+
+        .services-container {
+          padding: 6px !important;
+          max-height: 160px !important;
+        }
+
+        .service-item {
+          padding: 8px !important;
+          min-height: 40px !important;
+        }
+
+        .service-item input[type="checkbox"] {
+          width: 16px !important;
+          height: 16px !important;
+        }
+
+        .total-section {
+          padding: 8px !important;
+          margin-top: 8px !important;
+        }
+
+        .total-amount {
+          font-size: 1rem !important;
+        }
+
+        .submit-section {
+          gap: 6px !important;
+          margin-top: 0.8rem !important;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          padding: 8px !important;
+          font-size: 13px !important;
+          min-height: 38px !important;
+        }
+      }
+
+      /* Portrait vs Landscape optimization */
+      @media (max-height: 500px) and (orientation: landscape) {
+        .add-sale-card {
+          padding: 1rem;
+          overflow-y: auto;
+          max-height: 70vh;
+        }
+
+        .services-container {
+          max-height: 150px;
+        }
+
+        .submit-section {
+          margin-top: 0.5rem;
+        }
+      }
+
+      /* High DPI/Retina display optimization */
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .add-sale-card {
+          border-width: 0.5px;
+        }
+
+        .form-control,
+        .services-container,
+        .total-section {
+          border-width: 1px;
+        }
+      }
+
+      /* Print optimization */
+      @media print {
+        body {
+          padding: 0;
+          background: white;
+        }
+
+        .container {
+          max-width: 100%;
+          padding: 0;
+        }
+
+        .dashboard-header,
+        .sales-history-card {
+          display: none;
+        }
+
+        .add-sale-card {
+          padding: 0;
+          border: none;
+          box-shadow: none;
+          background: white;
+        }
+
+        .submit-section {
+          display: none;
+        }
+
+        .message,
+        .success-message-container {
+          display: none;
+        }
+      }
+
+      /* Accessibility enhancements for responsive design */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        .add-sale-card {
+          border: 2px solid;
+        }
+
+        .form-control {
+          border-width: 2px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+          border-width: 2px;
+        }
+      }
+
+      /* Dark mode support (if system supports it) */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background-color: #111827;
+          --card-background: #1f2937;
+          --text-primary: #f9fafb;
+          --text-secondary: #9ca3af;
+          --border-color: #374151;
+        }
+
+        body {
+          background-color: var(--background-color);
+          color: var(--text-primary);
+        }
+
+        .add-sale-card,
+        .sales-history-card,
+        .dashboard-header,
+        .dashboard-content {
+          background: var(--card-background);
+          border-color: var(--border-color);
+        }
+
+        .form-control,
+        .services-container,
+        .total-section,
+        .search-input {
+          background: white;
+          border-color: var(--border-color);
+        }
+
+        .service-item:hover {
+          background-color: #374151;
+        }
+
+        .service-item:active {
+          background-color: #4b5563;
+        }
+      }
+
+      /* Screen reader and keyboard navigation improvements */
+      .add-sale-card *:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+
+      /* Ensure proper tab order and focus management */
+      .add-sale-card {
+        outline: none;
+      }
+
+      .add-sale-card:focus-within {
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Simple Header -->
+    <header class="simple-header">
+      <div class="header-content">
+        <h1>Welcome <span id="cashier-name">User</span></h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+        <!-- Main Dashboard Content -->
+    <div class="dashboard-content">
+        <h2 class="dashboard-title">Cashier Functions</h2>
+
+        <div class="dashboard-main">
+          <!-- Add New Sale Card -->
+          <div class="add-sale-card">
+            <h3 class="card-title">➕ Add New Sale</h3>
+
+            <!-- Success/Error Messages -->
+            <div id="message-container"></div>
+
+            <form id="sales-form">
+              <div class="form-layout">
+                <div class="form-section">
+                  <div class="form-group">
+                    <label for="customer-name">Customer Name</label>
+                    <input
+                      type="text"
+                      id="customer-name"
+                      class="form-control"
+                      placeholder="Enter customer name"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="customer-tp">Contact Number (TP)</label>
+                    <input
+                      type="tel"
+                      id="customer-tp"
+                      class="form-control"
+                      placeholder="Enter contact number"
+                      required
+                    />
+                  </div>
+
+                  <!-- Total Section -->
+                  <div class="total-section">
+                    <div class="total-row">
+                      <span class="total-label">Selected Services:</span>
+                      <span id="selected-count" class="total-amount">0</span>
+                    </div>
+                    <div class="total-row">
+                      <span class="total-label">Total Amount:</span>
+                      <span id="total-amount" class="total-amount">Rs. 0</span>
+                    </div>
+                  </div>
+
+                  <!-- Submit Section -->
+                  <div class="submit-section">
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                      <span id="submit-text">Save Sale</span>
+                      <span
+                        id="submit-loading"
+                        class="loading"
+                        style="display: none"
+                      ></span>
+                    </button>
+                    <button type="button" class="reset-btn" onclick="resetForm()">
+                      Reset Form
+                    </button>
+                  </div>
+                </div>
+
+                <div class="services-section">
+                  <div class="services-header">
+                    <label>Services</label>
+                  </div>
+                  <div id="services-container" class="services-container">
+                    <!-- Services will be loaded here -->
+                    <div class="loading-services">Loading services...</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Success Message Container -->
+              <div
+                id="success-message-container"
+                class="success-message-container"
+              ></div>
+            </form>
+          </div>
+
+          <!-- Sales History Section -->
+          <div class="sales-history-card">
+            <div class="history-header">
+              <h3 class="card-title">📊 Sales History</h3>
+            </div>
+
+            <!-- Sales Summary Card -->
+            <div class="sales-summary-card">
+              <div class="summary-item">
+                <div class="total-label">Total Sales</div>
+                <div id="total-sales-amount" class="total-sales-amount">--</div>
+              </div>
+              <div class="summary-item">
+                <div class="total-label">Transaction Count</div>
+                <div id="transaction-count" class="total-sales-amount">0</div>
+              </div>
+              <div class="summary-item">
+                <div class="total-label">Date Range</div>
+                <div id="current-date-range" class="total-sales-amount">Today</div>
+              </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-container">
+              <input
+                type="text"
+                id="search-input"
+                class="search-input"
+                placeholder="Search by customer name or contact..."
+              />
+              <select
+                id="date-filter"
+                class="form-control"
+                style="width: 200px"
+              >
+                <option value="today">Today</option>
+                <option value="this_week">This Week</option>
+                <option value="this_month">This Month</option>
+              </select>
+              <button
+                onclick="searchSales()"
+                style="
+                  padding: 0.75rem 1.5rem;
+                  background: var(--primary-color);
+                  color: white;
+                  border: none;
+                  border-radius: 8px;
+                  font-weight: 600;
+                  cursor: pointer;
+                "
+              >
+                Search
+              </button>
+              <button
+                onclick="clearSearch()"
+                style="
+                  padding: 0.75rem 1rem;
+                  background: #94a3b8;
+                  color: white;
+                  border: none;
+                  border-radius: 8px;
+                  font-weight: 600;
+                  cursor: pointer;
+                "
+              >
+                Clear
+              </button>
+            </div>
+
+            <!-- Sales Table -->
+            <div class="table-container">
+              <table class="sales-table">
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Customer</th>
+                    <th>Services</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-table-body">
+                  <!-- Sales data will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const salesTableBody = document.getElementById("sales-table-body");
+      const searchInput = document.getElementById("search-input");
+      const cashierNameElement = document.getElementById("cashier-name");
+      const currentDateRangeElement = document.getElementById("current-date-range");
+
+      cashierNameElement.textContent = localStorage.getItem("cashierName");
+
+      // Initialize the dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        renderSalesHistory();
+      });
+
+      // Render Sales History with filter support
+      async function renderSalesHistory(filter = "", dateFilter = "today") {
+        currentDateRangeElement.textContent = dateFilter.replace("_", " ");
+        salesTableBody.innerHTML = "";
+
+        try {
+          // Fetch services for name mapping
+          const servicesResponse = await fetch("/api/admin/services");
+          const servicesResult = await servicesResponse.json();
+          const services =
+            servicesResult.success && Array.isArray(servicesResult.data)
+              ? servicesResult.data
+              : [];
+
+          // Fetch sales for current cashier with date filter
+          const cashierId = getCurrentCashierId();
+          console.log("Fetching sales for cashier ID:", cashierId);
+
+          // Build query parameters
+          const params = new URLSearchParams({
+            cashierId: cashierId,
+            dateFilter: dateFilter,
+          });
+
+          if (filter) {
+            params.append("search", filter);
+          }
+
+          console.log(
+            "API Request - cashierId:",
+            cashierId,
+            "dateFilter:",
+            dateFilter,
+            "params:",
+            params.toString(),
+          );
+
+          const salesResponse = await fetch(`/api/sales?${params.toString()}`);
+          const salesResult = await salesResponse.json();
+
+          console.log(
+            "API Response - filter used:",
+            salesResult.filter,
+            "data length:",
+            salesResult.data.length,
+          );
+
+          let salesData = [];
+          if (salesResult.success && Array.isArray(salesResult.data)) {
+            salesData = salesResult.data;
+          }
+
+          // Apply search filter if provided (for backward compatibility)
+          let filteredSales = salesData;
+          if (filter) {
+            filteredSales = salesData.filter(
+              (sale) =>
+                sale.customer_name
+                  .toLowerCase()
+                  .includes(filter.toLowerCase()) ||
+                sale.customer_tp.includes(filter),
+            );
+          }
+
+          // NEW: Use API-provided totals instead of calculating client-side
+          const totalSalesAmount = salesResult.totalSalesAmount || 0;
+          const transactionCount = salesResult.transactionCount || 0;
+
+          // Format currency function
+          function formatCurrency(amount) {
+            return `Rs. ${amount.toLocaleString()}`;
+          }
+
+          // Update the total sales display with API-provided value
+          document.getElementById("total-sales-amount").textContent =
+            formatCurrency(totalSalesAmount);
+
+          // Update transaction count (this was already working)
+          document.getElementById("transaction-count").textContent =
+            transactionCount;
+
+          if (filteredSales.length === 0) {
+            salesTableBody.innerHTML = `
+        <tr>
+            <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                No sales records found
+            </td>
+        </tr>
+      `;
+            return;
+          }
+
+          // Render sales data (unchanged)
+          filteredSales.forEach((sale) => {
+            const row = document.createElement("tr");
+
+            // Get service names for display
+            const serviceNames = sale.services.map((service) => {
+              const serviceId = service.service_id; // Extract service_id from the object
+              const serviceObj = services.find((s) => s.id === serviceId);
+              return serviceObj ? serviceObj.service_name : "Unknown Service";
+            });
+
+            row.innerHTML = `
+        <td data-label="Date & Time">${formatDate(sale.sale_date)}</td>
+        <td data-label="Customer">
+            <div><strong>${sale.customer_name}</strong></div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">${sale.customer_tp}</div>
+        </td>
+        <td data-label="Services">
+            <div class="services-list">
+                ${serviceNames.map((name) => `<span class="service-tag">${name}</span>`).join("")}
+            </div>
+        </td>
+        <td data-label="Total" class="sale-amount">Rs. ${sale.total_amount.toLocaleString()}</td>
+      `;
+            salesTableBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Error fetching sales history:", error);
+          salesTableBody.innerHTML = `
+      <tr>
+          <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+              Error loading sales history. Please try again later.
+          </td>
+      </tr>
+    `;
+        }
+      }
+
+      // Format Date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString("en-US", {
+          month: "numeric",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).replace(',', ' ,');
+      }
+
+      // Search Sales
+      function searchSales() {
+        const searchTerm = searchInput.value.trim();
+        const dateFilter = document.getElementById("date-filter").value;
+
+        renderSalesHistory(searchTerm, dateFilter);
+      }
+
+      // Clear Search
+      function clearSearch() {
+        searchInput.value = "";
+        document.getElementById("date-filter").value = "today"; // Reset dropdown to default
+        renderSalesHistory("", "today");
+      }
+
+      // Add event listener for dropdown change
+      document
+        .getElementById("date-filter")
+        .addEventListener("change", function () {
+          const searchTerm = searchInput.value.trim();
+          const dateFilter = this.value;
+          renderSalesHistory(searchTerm, dateFilter);
+        });
+
+      function getCurrentCashierId() {
+        return localStorage.getItem("cashierId") || "1";
+      }
+
+      // Logout Function
+      function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+          window.location.href = "/";
+        }
+      }
+
+      // Add Enter key support for search
+      searchInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          searchSales();
+        }
+      });
+
+      // Form validation and submission
+      const salesForm = document.getElementById("sales-form");
+      const customerNameInput = document.getElementById("customer-name");
+      const customerTpInput = document.getElementById("customer-tp");
+      const messageContainer = document.getElementById("message-container");
+      const successMessageContainer = document.getElementById("success-message-container");
+      const submitBtn = document.getElementById("submit-btn");
+      const submitText = document.getElementById("submit-text");
+      const submitLoading = document.getElementById("submit-loading");
+
+      // Form validation
+      function validateForm() {
+        const name = customerNameInput.value.trim();
+        const tp = customerTpInput.value.trim();
+        
+        // Clear previous messages
+        messageContainer.innerHTML = "";
+        successMessageContainer.innerHTML = "";
+
+        if (!name) {
+          showMessage("Please enter customer name", "error");
+          customerNameInput.focus();
+          return false;
+        }
+
+        if (!tp) {
+          showMessage("Please enter contact number", "error");
+          customerTpInput.focus();
+          return false;
+        }
+
+        // Validate phone number (Sri Lankan format: 9 or 10 digits)
+        const phoneRegex = /^[0-9]{9,10}$/;
+        if (!phoneRegex.test(tp)) {
+          showMessage("Please enter a valid contact number (9-10 digits)", "error");
+          customerTpInput.focus();
+          return false;
+        }
+
+        return true;
+      }
+
+      // Show message function
+      function showMessage(message, type) {
+        messageContainer.innerHTML = `
+          <div class="message ${type}">
+            ${message}
+          </div>
+        `;
+      }
+
+      // Show success message with animation
+      function showSuccessMessage(message) {
+        successMessageContainer.innerHTML = `
+          <div class="success-message">
+            ${message}
+          </div>
+        `;
+        
+        // Auto-hide success message after 2 seconds
+        setTimeout(() => {
+          successMessageContainer.innerHTML = '';
+        }, 2000);
+      }
+
+      // Reset form function
+      function resetForm() {
+        customerNameInput.value = "";
+        customerTpInput.value = "";
+        messageContainer.innerHTML = "";
+        // Note: NOT clearing successMessageContainer here to allow success message to display
+        customerNameInput.focus();
+      }
+
+        // Form submission handler
+      salesForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        
+        if (!validateForm()) {
+          return;
+        }
+
+        const name = customerNameInput.value.trim();
+        const tp = customerTpInput.value.trim();
+        const cashierId = getCurrentCashierId();
+        const selectedServices = getSelectedServices();
+
+        // Validate that at least one service is selected
+        if (selectedServices.length === 0) {
+          showMessage("Please select at least one service", "error");
+          return;
+        }
+
+        // Calculate total amount from selected services
+        const totalAmount = selectedServices.reduce((sum, service) => sum + service.price, 0);
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitText.style.display = "none";
+        submitLoading.style.display = "inline-block";
+
+        try {
+          const response = await fetch("/api/sales", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              customerName: name,
+              customerTp: tp,
+              services: selectedServices.map(s => s.service_id),
+              totalAmount: totalAmount,
+              cashierId: cashierId,
+              date: new Date().toISOString()
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showSuccessMessage("Sale saved successfully!");
+            resetForm();
+            // Reset service selection
+            const checkboxes = servicesContainer.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+            updateTotals(); // Update totals to zero
+            // Refresh sales history
+            const searchTerm = searchInput.value.trim();
+            const dateFilter = document.getElementById("date-filter").value;
+            renderSalesHistory(searchTerm, dateFilter);
+          } else {
+            showMessage(result.message || "Failed to save sale", "error");
+          }
+        } catch (error) {
+          console.error("Error saving sale:", error);
+          showMessage("An error occurred while saving the sale", "error");
+        } finally {
+          // Reset button state
+          submitBtn.disabled = false;
+          submitText.style.display = "inline-block";
+          submitLoading.style.display = "none";
+        }
+      });
+
+      // Services Management Functions
+      const servicesContainer = document.getElementById("services-container");
+      const selectedCountElement = document.getElementById("selected-count");
+      const totalAmountElement = document.getElementById("total-amount");
+
+      // Load services from API
+      async function loadServices() {
+        try {
+          const response = await fetch("/api/admin/services");
+          const result = await response.json();
+
+          if (result.success && Array.isArray(result.data)) {
+            renderServices(result.data);
+          } else {
+            servicesContainer.innerHTML = `
+              <div class="loading-services" style="color: var(--danger-color);">
+                Error loading services. Please try again later.
+              </div>
+            `;
+          }
+        } catch (error) {
+          console.error("Error loading services:", error);
+          servicesContainer.innerHTML = `
+            <div class="loading-services" style="color: var(--danger-color);">
+              Error loading services. Please check your connection.
+            </div>
+          `;
+        }
+      }
+
+      // Render services list
+      function renderServices(services) {
+        if (services.length === 0) {
+          servicesContainer.innerHTML = `
+            <div class="loading-services" style="color: var(--warning-color);">
+              No services available. Please add services in the admin panel.
+            </div>
+          `;
+          return;
+        }
+
+        servicesContainer.innerHTML = services
+          .map((service) => {
+            const formattedPrice = formatCurrency(service.price);
+            return `
+              <label class="service-item">
+                <input type="checkbox" value="${service.id}" data-price="${service.price}" onchange="updateTotals()">
+                <div class="service-info">
+                  <div class="service-name">${service.service_name}</div>
+                  <div class="service-price">${formattedPrice}</div>
+                </div>
+              </label>
+            `;
+          })
+          .join("");
+
+        updateTotals(); // Initialize totals
+      }
+
+      // Format currency function
+      function formatCurrency(amount) {
+        return `Rs. ${amount.toLocaleString()}`;
+      }
+
+      // Update totals when services are selected/deselected
+      function updateTotals() {
+        const checkboxes = servicesContainer.querySelectorAll('input[type="checkbox"]');
+        let selectedCount = 0;
+        let totalAmount = 0;
+
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            selectedCount++;
+            totalAmount += parseFloat(checkbox.dataset.price);
+          }
+        });
+
+        selectedCountElement.textContent = selectedCount;
+        totalAmountElement.textContent = formatCurrency(totalAmount);
+      }
+
+      // Get selected services for form submission
+      function getSelectedServices() {
+        const checkboxes = servicesContainer.querySelectorAll('input[type="checkbox"]:checked');
+        return Array.from(checkboxes).map((checkbox) => ({
+          service_id: parseInt(checkbox.value),
+          price: parseFloat(checkbox.dataset.price),
+        }));
+      }
+
+
+      // Initialize services loading
+      loadServices();
+    </script>
+  </body>
+</html>

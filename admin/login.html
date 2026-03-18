@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Salon System</title>
+    <style>
+        :root {
+            --primary-color: #0091ff;
+            --secondary-color: #a78bfa;
+            --background-color: rgb(6, 24, 44);
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+        }
+
+        .login-container {
+            background: var(--card-background);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-hover);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo-section {
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .logo i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-group input.error {
+            border-color: #ef4444;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            min-height: 1.2rem;
+            display: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .login-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background-color: #f3e8ff;
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="logo">
+                <!-- Admin icon (you can replace with an actual icon) -->
+                <span style="color: white; font-size: 1.5rem;">👑</span>
+            </div>
+            <h1>Admin</h1>
+            <div class="subtitle">Please enter your credentials to access the admin panel</div>
+        </div>
+
+        <div class="role-badge">Administrator</div>
+
+        <form id="admin-login-form">
+            <div class="form-group">
+                <label for="admin-username">Username</label>
+                <input 
+                    type="text" 
+                    id="admin-username" 
+                    name="username"
+                    placeholder="Enter admin username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="admin-password">Password</label>
+                <input 
+                    type="password" 
+                    id="admin-password" 
+                    name="password"
+                    placeholder="Enter admin password"
+                    required
+                >
+            </div>
+
+            <div id="admin-error" class="error-message"></div>
+
+            <button type="submit" class="login-btn" id="admin-login-btn">
+                Sign In
+            </button>
+        </form>
+
+        <a href="/" class="back-link">← Back to Cashier Login</a>
+    </div>
+
+    <script>
+        // Handle admin login form submission
+        document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('admin-username').value.trim();
+            const password = document.getElementById('admin-password').value.trim();
+            const errorDiv = document.getElementById('admin-error');
+            const loginBtn = document.getElementById('admin-login-btn');
+            
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            document.getElementById('admin-username').classList.remove('error');
+            document.getElementById('admin-password').classList.remove('error');
+
+            // Validate inputs
+            if (!username || !password) {
+                showError(errorDiv, 'Please enter both username and password');
+                if (!username) document.getElementById('admin-username').classList.add('error');
+                if (!password) document.getElementById('admin-password').classList.add('error');
+                return;
+            }
+
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing In...';
+
+            try {
+                const response = await fetch('/api/authenticate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Admin login response:', data);
+
+                if (data.success) {
+                    // Check if user is admin
+                    if (data.data1 && data.data1.role === 'admin') {
+                        loginBtn.textContent = 'Success!';
+                        setTimeout(() => {
+                            window.location.href = `/admin/admin_dashboard.html?username=${encodeURIComponent(username)}`;
+
+                        }, 1000);
+                    } else {
+                        showError(errorDiv, 'Access denied. Admin privileges required.');
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Sign In';
+                    }
+                } else {
+                    showError(errorDiv, data.message || 'Invalid credentials');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign In';
+                }
+            } catch (error) {
+                console.error('Admin login error:', error);
+                showError(errorDiv, 'Connection error. Please try again.');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
+            }
+        });
+
+        // Helper function to show error messages
+        function showError(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        // Add keyboard shortcuts for admin login
+        document.addEventListener('keydown', function(event) {
+            // Ctrl + A or Cmd + A for admin login
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
+                event.preventDefault();
+                window.location.href = '/admin/login.html';
+            }
+            
+            // F12 key as alternative
+            if (event.key === 'F12') {
+                event.preventDefault();
+                window.location.href = '/admin/login.html';
+            }
+        });
+    </script>
+</body>
+</html>
